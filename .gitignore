@@ -1,0 +1,21 @@
+# Gradle build directories
+build/
+.gradle/
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+
+# OS-specific files (macOS, Windows, etc.)
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Maven wrapper (if present)
+.mvn/
+
+# Gradle wrapper (if you want to ignore it, otherwise leave it out)
+gradle-wrapper.jar
+gradle-wrapper.properties

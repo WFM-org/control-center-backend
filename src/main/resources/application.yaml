@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/w
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none  # We manage the schema manually via create-tables.sql
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations: classpath:create-tables.sql
+      data-locations: classpath:insert-data.sql
