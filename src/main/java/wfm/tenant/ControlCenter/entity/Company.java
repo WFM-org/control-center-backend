@@ -3,6 +3,7 @@ package wfm.tenant.ControlCenter.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Table(name = "company")
 public class Company {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ColumnDefault("gen_random_uuid()")
     @Column(name = "internalid", nullable = false)
     private UUID id;
 
@@ -28,12 +29,6 @@ public class Company {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "localedefault")
-    private Locale localeDefault;
+    private Locale localedefault;
 
-/*
- TODO [Reverse Engineering] create field to map the 'status' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "status", columnDefinition = "status not null")
-    private Object status;
-*/
 }

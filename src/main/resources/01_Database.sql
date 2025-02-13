@@ -11,19 +11,12 @@ drop table IF EXISTS AllowedFieldOverrides cascade;
 drop table IF EXISTS Customer cascade;
 drop table IF EXISTS Locale cascade;
 drop table IF EXISTS Country cascade;
-drop type IF EXISTS status;
 drop type IF EXISTS tenantType;
-drop type IF EXISTS eventType;
 drop extension if exists pgcrypto;
 -- END DROP
 -- Extension
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- End Extension
--- START TYPES
-CREATE TYPE status AS ENUM ('active', 'inactive');
-CREATE TYPE tenantType AS ENUM ('prod', 'test', 'dev');
-CREATE TYPE eventType AS ENUM ('hire', 'rehire', 'termination', 'change');
--- END START TYPES
 
 -- START TABLE AllowedFieldOverrides
 CREATE TABLE AllowedFieldOverrides (
@@ -45,7 +38,7 @@ CREATE TABLE Customer
 (
     customerId   BIGINT NOT NULL DEFAULT nextval('CustomerID') PRIMARY KEY,
     customerName VARCHAR(64)     NOT null,
-    status       status NOT NULL
+    recordStatus smallint not null
 );
 
 ALTER SEQUENCE CustomerID OWNED BY Customer.customerId;
@@ -73,9 +66,9 @@ CREATE TABLE Tenant
     internalId UUID PRIMARY key DEFAULT gen_random_uuid(),
     customer BIGINT NOT NULL,
     tenantID VARCHAR(16) UNIQUE NOT NULL,
-    status status NOT NULL,
+    recordStatus smallint not null,
     tenantName VARCHAR(64) NOT NULL,
-    tenantType tenantType NOT NULL,
+    tenantType smallint NOT NULL,
     adminEmail VARCHAR(128) NOT NULL,
     localeDefault VARCHAR(10) NOT NULL,
     CONSTRAINT FK_Customer FOREIGN KEY (customer) REFERENCES Customer (customerId),
@@ -102,7 +95,7 @@ CREATE TABLE Company
     externalId VARCHAR(16) NOT NULL,
     name VARCHAR(64) NOT NULL,
     localeDefault VARCHAR(10),
-    status status not null,
+    recordStatus smallint not null,
     CONSTRAINT unique_tenant_externalId UNIQUE (tenant, externalId),
     CONSTRAINT FK_Tenant FOREIGN KEY (tenant) REFERENCES Tenant (internalId),
     CONSTRAINT FK_Locale FOREIGN KEY (localeDefault) REFERENCES Locale (localeId)
@@ -126,12 +119,8 @@ CREATE TABLE Person
     internalId UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant UUID NOT NULL,
     personId VARCHAR(16) NOT NULL,
-    username VARCHAR(16) NOT NULL,
-    password VARCHAR(128),
-    email VARCHAR(126),
     localeDecision VARCHAR(10),
     CONSTRAINT unique_tenant_personId UNIQUE (tenant, personId),
-    CONSTRAINT unique_tenant_username UNIQUE (tenant, username),
     CONSTRAINT FK_Tenant FOREIGN KEY (tenant) REFERENCES Tenant (internalId),
     CONSTRAINT FK_Locale FOREIGN KEY (localeDecision) REFERENCES Locale (localeId)
 );
@@ -160,11 +149,15 @@ CREATE TABLE Employment
     tenant UUID not null,
     person UUID NOT NULL,
     employeeID VARCHAR(16) NOT NULL,
-    status status NOT NULL,
+    username VARCHAR(16) NOT NULL,
+    password varchar(255),
+    email VARCHAR(126),
+    employeeStatus smallint not null,
     primaryEmployment BOOLEAN NOT NULL,
     hireDate DATE NOT NULL,
     terminationDate DATE,
     CONSTRAINT unique_tenant_employeeID UNIQUE (tenant, employeeID),
+    CONSTRAINT unique_tenant_username UNIQUE (tenant, username),
     CONSTRAINT FK_Person FOREIGN KEY (person) REFERENCES Person (internalId)
 );
 -- END TABLE Employment
@@ -175,8 +168,8 @@ CREATE TABLE EmploymentHistory
     employment UUID,
     startDate DATE,
     endDate DATE NOT NULL DEFAULT '9999-12-31',
-    event eventType NOT NULL,
-    status status NOT NULL,
+    event smallint NOT NULL,
+    employeeStatus smallint not null,
     company UUID NOT NULL,
     manager UUID,
     hr UUID,
@@ -186,5 +179,5 @@ CREATE TABLE EmploymentHistory
     CONSTRAINT FK_EmploymentManager FOREIGN KEY (manager) REFERENCES Employment (internalId),
     CONSTRAINT FK_EmploymentHr FOREIGN KEY (hr) REFERENCES Employment (internalId)
 );
--- END TABLE EmploymentHistory 
-    
+-- END TABLE EmploymentHistory
+

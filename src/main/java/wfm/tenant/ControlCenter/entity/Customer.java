@@ -20,9 +20,10 @@ public class Customer {
     @Column(name = "customername", nullable = false, length = 64)
     private String customerName;
 
-    @Column(name = "status", nullable = false, length = 64)
-    private String status;
+    @Column(name = "recordstatus", nullable = false, length = 64)
+    private Short recordStatus;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Tenant> tenants = new ArrayList<>();
+
 }

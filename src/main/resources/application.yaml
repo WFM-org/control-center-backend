@@ -1,16 +1,26 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/r
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
 
   jpa:
     hibernate:
-      ddl-auto: none  # We manage the schema manually via create-tables.sql
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
+
   sql:
     init:
       platform: postgres
       mode: always
-      schema-locations: classpath:create-tables.sql
-      data-locations: classpath:insert-data.sql
+      schema-locations:
+        - classpath:01_Database.sql
+        - classpath:02_Triggers.sql
+      data-locations: classpath:03_Metadata.sql,classpath:04_DummyData.sql

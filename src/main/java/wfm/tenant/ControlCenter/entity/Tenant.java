@@ -23,8 +23,14 @@ public class Tenant {
     @Column(name = "tenantid", nullable = false, length = 16)
     private String tenantId;
 
+    @Column(name = "recordstatus", nullable = false, length = 64)
+    private Short recordStatus;
+
     @Column(name = "tenantname", nullable = false, length = 64)
     private String tenantName;
+
+    @Column(name = "tenanttype", nullable = false, length = 64)
+    private String tenantType;
 
     @Column(name = "adminemail", nullable = false, length = 128)
     private String adminEmail;

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import wfm.tenant.ControlCenter.entity.Company;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.service.CompanyService;
 
@@ -63,4 +64,13 @@ public class CompanyController {
         }
     }
 
+    @PostMapping("/createCompany")
+    public ResponseEntity<String> createCompany(@RequestBody Company request) {
+        try {
+            companyService.createCompany(request.getExternalId(), request.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Company created succesfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating company: " + e.getMessage());
+        }
+    }
 }

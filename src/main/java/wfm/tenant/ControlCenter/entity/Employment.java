@@ -28,18 +28,28 @@ public class Employment {
     @Column(name = "employeeid", nullable = false, length = 16)
     private String employeeid;
 
+    @Column(name = "username", length = 128, nullable = false)
+    private String username;
+
+    @Column(name = "email", length = 126, nullable = false)
+    private String email;
+
+    @Column(name = "password", length = 128,  nullable = false)
+    private String password;
+
+    @Column(name = "employeestatus", nullable = false, length = 64)
+    private Short employeeStatus;
+
     @Column(name = "primaryemployment", nullable = false)
     private Boolean primaryemployment = false;
 
     @Column(name = "hiredate", nullable = false)
     private LocalDate hiredate;
+
     @Column(name = "terminationdate")
     private LocalDate terminationdate;
 
-/*
- TODO [Reverse Engineering] create field to map the 'status' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "status", columnDefinition = "status not null")
-    private Object status;
-*/
+    @Column(name = "freezeaccessfrom")
+    private LocalDate freezeAccessFrom;
+
 }

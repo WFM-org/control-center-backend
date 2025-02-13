@@ -24,15 +24,6 @@ public class Person {
     @Column(name = "personid", nullable = false, length = 16)
     private String personid;
 
-    @Column(name = "username", nullable = false, length = 16)
-    private String username;
-
-    @Column(name = "password", length = 128)
-    private String password;
-
-    @Column(name = "email", length = 126)
-    private String email;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "localedecision")
     private Locale localedecision;
