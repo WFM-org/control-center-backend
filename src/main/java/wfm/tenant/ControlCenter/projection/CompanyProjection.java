@@ -4,16 +4,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.UUID;
 
-@JsonPropertyOrder({"id", "tenantId", "companyName", "companyExternalId", "localeDefault"})
+@JsonPropertyOrder({"id", "tenant", "name", "externalid", "localeDefault"})
 public interface CompanyProjection {
 
-    Long getId();
+    UUID getId();
 
-    UUID getTenantId();
+    UUID getTenant();
 
-    String getCompanyName();
+    String getExternalId();
 
-    String getCompanyExternalId();
+    String getName();
 
-    LocaleProjection getLocaleDefault();
+    LocaleProjection getLocaledefault();
+
+    Short getRecordStatus();
 }
