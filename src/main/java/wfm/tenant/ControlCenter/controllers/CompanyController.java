@@ -1,7 +1,9 @@
 package wfm.tenant.ControlCenter.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,15 +16,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
-@Slf4j
 public class CompanyController {
+
+    private static final Logger log = LoggerFactory.getLogger(CompanyController.class);
 
     private final CompanyService companyService;
 
     @GetMapping("/getAllCompanies")
     public ResponseEntity<List<CompanyProjection>> getAllCompanies() {
         try {
-            List<CompanyProjection> companies = companyService.getAllCompanyProjection();
+            List<CompanyProjection> companies = companyService.getAllCompanies();
             if (companies.isEmpty()) {
                 log.warn("No companies found");
                 return ResponseEntity.noContent().build();
@@ -65,7 +68,7 @@ public class CompanyController {
     }
 
     @PostMapping("/createCompany")
-    public ResponseEntity<String> createCompany(@RequestBody Company request) {
+    public ResponseEntity<String> createCompany(@Valid @RequestBody Company request) {
         try {
             companyService.createCompany(request.getExternalId(), request.getName());
             return ResponseEntity.status(HttpStatus.CREATED).body("Company created succesfully.");

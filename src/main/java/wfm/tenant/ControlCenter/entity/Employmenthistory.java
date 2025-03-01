@@ -32,17 +32,4 @@ public class Employmenthistory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hr")
     private Employment hr;
-
-/*
- TODO [Reverse Engineering] create field to map the 'event' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "event", columnDefinition = "eventtype not null")
-    private Object event;
-*/
-/*
- TODO [Reverse Engineering] create field to map the 'status' column
- Available actions: Define target Java type | Uncomment as is | Remove column mapping
-    @Column(name = "status", columnDefinition = "status not null")
-    private Object status;
-*/
 }

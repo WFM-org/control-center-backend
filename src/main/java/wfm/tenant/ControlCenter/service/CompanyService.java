@@ -19,7 +19,7 @@ public class CompanyService {
         this.companyRepository = companyRepository;
     }
 
-    public List<CompanyProjection> getAllCompanyProjection() {
+    public List<CompanyProjection> getAllCompanies() {
         return companyRepository.findAllCompanies();
     }
 
@@ -33,12 +33,6 @@ public class CompanyService {
 
     @Transactional
     public void createCompany(String externalId, String companyName) {
-        if (companyName == null || companyName.isBlank())
-            throw new IllegalArgumentException("Company name cannot be empty");
-
-        if (externalId == null || externalId.isBlank()) {
-            throw new IllegalArgumentException("External id cannot be empty");
-        }
         try {
             Company company = new Company();
             company.setExternalId(externalId);
