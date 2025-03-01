@@ -24,7 +24,7 @@ public class Company {
     private UUID tenant;
 
     @NotNull(message = "External Id can not be null")
-    @Column(name = "externalId", nullable = false, length = 16)
+    @Column(name = "externalid", nullable = false, length = 16)
     private String externalId;
 
     @NotNull(message = "Name can not be null")
