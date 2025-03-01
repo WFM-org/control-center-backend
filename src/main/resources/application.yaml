@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        highlight_sql: true
+
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations:
+        - classpath:01_Database.sql
+        - classpath:02_Triggers.sql
+      data-locations: classpath:03_Metadata.sql,classpath:04_DummyData.sql
