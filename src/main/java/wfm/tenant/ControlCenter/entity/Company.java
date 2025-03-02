@@ -31,10 +31,10 @@ public class Company {
     @Column(name = "name", nullable = false, length = 64)
     private String name;
 
-    @Column(name = "localeDefault", length = 10)
+    @Column(name = "localedefault", length = 10)
     private String localedefault;
 
-    @Column(name = "recordStatus", length = 64)
+    @Column(name = "recordstatus", length = 64)
     private Short recordStatus;
 
 }
