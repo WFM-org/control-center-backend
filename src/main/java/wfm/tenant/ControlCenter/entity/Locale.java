@@ -17,6 +17,6 @@ public class Locale {
     private String localeId;
 
     @Column(name = "name", nullable = false, length = 32)
-    private String name;
+    private String localeName;
 
 }

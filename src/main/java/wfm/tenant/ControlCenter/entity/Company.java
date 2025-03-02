@@ -17,7 +17,7 @@ import java.util.UUID;
 public class Company {
     @Id
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "internalId", nullable = false)
+    @Column(name = "internalid", nullable = false)
     private UUID id;
 
     @Column(name = "tenant", nullable = false)
@@ -31,8 +31,9 @@ public class Company {
     @Column(name = "name", nullable = false, length = 64)
     private String name;
 
-    @Column(name = "localedefault", length = 10)
-    private String localedefault;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "localedefault", nullable = false)
+    private Locale localeDefault;
 
     @Column(name = "recordstatus", length = 64)
     private Short recordStatus;
