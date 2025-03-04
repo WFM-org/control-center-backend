@@ -19,7 +19,7 @@ public class EmploymenthistoryId implements Serializable {
     @Column(name = "employment", nullable = false)
     private UUID employment;
 
-    @Column(name = "startdate", nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startdate;
 
     @Override

@@ -14,13 +14,13 @@ import java.util.List;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customerid", nullable = false)
+    @Column(name = "customer_id", nullable = false)
     private Long id;
 
-    @Column(name = "customername", nullable = false, length = 64)
+    @Column(name = "customer_name", nullable = false, length = 64)
     private String customerName;
 
-    @Column(name = "recordstatus", nullable = false, length = 64)
+    @Column(name = "record_status", nullable = false, length = 64)
     private Short recordStatus;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

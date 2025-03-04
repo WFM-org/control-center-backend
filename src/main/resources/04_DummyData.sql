@@ -1,218 +1,137 @@
-INSERT INTO Customer (customerName, recordStatus)
+INSERT INTO customer (customer_name, record_Status)
 VALUES
-    ('Dogan Kilotlari',1),
-    ('Tolga Dinlenme tesisleri', 1),
-    ('Patates', 1),
-    ('Mert tellak federasyonu', 0);
-INSERT INTO Tenant (customer, tenantID, recordStatus, tenantName, tenantType, adminEmail, localeDefault)
+    ('Salling',1),
+    ('DSV', 1);
+INSERT INTO tenant (customer, tenant_ID, record_Status, tenant_Name, tenant_Type, admin_Email, communication_language)
 VALUES
-    ('10000000', 'DKDEV',1,'Dogan Kilotlari DEV',3,'test@egemen.dk','en_GB'),
-    ('10000000', 'DKTEST',1,'Dogan Kilotlari TEST',2,'test@egemen.dk','en_GB'),
-    ('10000000', 'DKPROD',1,'Dogan Kilotlari',1,'test@egemen.dk','en_GB'),
-    ('10000001', 'TDSDEV',1,'Tolga Dinlenme tesisleri',3,'test@egemen.dk','en_GB'),
-    ('10000001', 'TDSTEST',1,'Tolga Dinlenme tesisleri',2,'test@egemen.dk','en_GB'),
-    ('10000001', 'TDSPROD',1,'Tolga Dinlenme tesisleri',1,'test@egemen.dk','en_GB'),
-    ('10000002', 'PTTDEV',1,'Patates DEV',3,'test@egemen.dk','en_GB'),
-    ('10000002', 'PTTTEST',1,'Patates TEST',2,'test@egemen.dk','en_GB'),
-    ('10000002', 'PTTPROD',1,'Patates',1,'test@egemen.dk','en_GB'),
-    ('10000003', 'MTFDEV',0,'Mert tellak federasyonu DEV',3,'test@egemen.dk','en_GB'),
-    ('10000003', 'MTFTEST',0,'Mert tellak federasyonu TEST',2,'test@egemen.dk','en_GB'),
-    ('10000003', 'MTFPROD',0,'Mert tellak federasyonu',1,'test@egemen.dk','en_GB');
-INSERT INTO LocaleEnabled
-VALUES
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),
-    ('en_GB',(SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'));
-INSERT INTO Company (tenant,externalId,name,localeDefault,recordStatus)
-VALUES
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),'SS01','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),'SS02','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),'SS03','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),'SS04','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),'SS05','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),'SS06','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),'SS07','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),'SS08','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),'SS09','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),'SS10','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),'SS11','Special A/S','en_GB',1),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),'SS12','Special A/S','en_GB',1);
-INSERT INTO CountryToCompany
-VALUES
-    ('DNK',(SELECT internalId FROM Company where externalId = 'SS01')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS02')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS03')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS04')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS05')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS06')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS07')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS08')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS09')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS10')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS11')),
-    ('DNK',(SELECT internalId FROM Company WHERE externalId = 'SS12'));
-INSERT INTO Person (tenant,personId,localeDecision)
-VALUES
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),'12345678','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),'12345676','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),'12345675','en_GB'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),'12345675','en_GB');
+    ('10000000','SALLINGTEST',1,'Salling TEST',3,'test@egemen.dk','en_GB'),
+	('10000000','SALLING',1,'Salling Production',2,'test@egemen.dk','en_GB'),
+	('10000001','DSVTEST',1,'DSV Test',1,'test@egemen.dk','en_GB'),
+	('10000001','DSV',1,'DSV Production',3,'test@egemen.dk','da_DK');
 
-INSERT INTO PersonHistory
+INSERT INTO orgunit (tenant,external_id,name,record_status,parent_unit)
 VALUES
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
-    ((SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31','System','','Admin','System Admin');
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'10002345','Chief Executive Office',1,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'10002345','Chief Executive Office',1,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'10002345','Chief Executive Office',1,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'10002345','Chief Executive Office',1,null);
+INSERT INTO orgunit (tenant,external_id,name,record_status,parent_unit)
+VALUES
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'10002346','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'10002346','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'10002346','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'10002346','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'10002347','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'10002347','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'10002347','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002345')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'10002347','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002345'));
+INSERT INTO orgunit (tenant,external_id,name,record_status,parent_unit)
+VALUES
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'10002348','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'10002348','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'10002348','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'10002348','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'10002349','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'10002349','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'10002349','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'10002349','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347'));
 
---Password of users ILoveWFM123?
-INSERT INTO Employment (tenant,person,employeeID,employeeStatus,username,password,email,primaryEmployment,hireDate)
-VALUES
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),(SELECT internalId FROM Person WHERE personId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),(SELECT internalId FROM Person WHERE personId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01'),
-    ((SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD'),(SELECT internalId FROM Person WHERE personId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01');
 
-INSERT INTO EmploymentHistory (employment,startDate,endDate,event,employeeStatus,company,manager,hr)
+INSERT INTO orgunit_history (orgunit,start_date,name,record_status,parent_unit)
 VALUES
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS01'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS02'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS03'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS04'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS05'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS06'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS07'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS08'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS09'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS10'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS11'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS12'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS01'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS02'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS03'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS04'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS05'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS06'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS07'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS08'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS09'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS10'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS11'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345676' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS12'),(SELECT internalId FROM Employment WHERE employeeId = '12345678' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS01'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS02'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'DKPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS03'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS04'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS05'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'TDSPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS06'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS07'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS08'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'PTTPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS09'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFDEV')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS10'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFTEST')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS11'),null,null),
-    ((SELECT internalId FROM Employment WHERE employeeId = '12345675' and tenant = (SELECT internalId FROM Tenant WHERE tenantID = 'MTFPROD')),'2025-01-01','9999-12-31',1,1,(SELECT internalId FROM Company WHERE externalId = 'SS12'),null,null);
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002345'),'1900-01-01','Chief Executive Office',1,null),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002345'),'1900-01-01','Chief Executive Office',1,null),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002345'),'1900-01-01','Chief Executive Office',1,null),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002345'),'1900-01-01','Chief Executive Office',1,null),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002346'),'1900-01-01','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002346'),'1900-01-01','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002346'),'1900-01-01','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002346'),'1900-01-01','Finance',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347'),'1900-01-01','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347'),'1900-01-01','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347'),'1900-01-01','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347'),'1900-01-01','Logistic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002345')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002348'),'1900-01-01','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002348'),'1900-01-01','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002348'),'1900-01-01','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002348'),'1900-01-01','Denmark International',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002349'),'1900-01-01','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002349'),'1900-01-01','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002349'),'1900-01-01','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+	((SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002349'),'1900-01-01','Denmark Domestic',1,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347'));
+
+
+INSERT INTO Company (tenant,external_id,name,default_language_pack,record_status,default_timezone)
+VALUES
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'SS01','Special A/S','en_GB',1,'Europe/Copenhagen'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'SS02','Special A/S','en_GB',1,'Europe/Copenhagen'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'SS03','Special A/S','en_GB',1,'Europe/Copenhagen'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'SS04','Special A/S','en_GB',1,'Europe/Copenhagen');
+
+ INSERT INTO Country_To_Company
+VALUES
+    ('DNK',(SELECT internal_id FROM Company where external_id = 'SS01')),
+    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS02')),
+    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS03')),
+    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS04'));
+
+ INSERT INTO Person (tenant,person_Id,language_pack,first_name,middle_name,last_name,display_name)
+VALUES
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'12345678','en_GB','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'12345678','en_GB','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'12345678','en_GB','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'12345678','en_GB','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'12345676','en_GB','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'12345676','en_GB','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'12345676','en_GB','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'12345676','en_GB','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),'12345675','en_GB','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),'12345675','en_GB','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'12345675','en_GB','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'12345675','en_GB','System','','Admin','System Admin');
+
+ INSERT INTO Person_History
+VALUES
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01','9999-12-31','Carla','','Grant','Carla Grant'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01','9999-12-31','System','','Admin','System Admin'),
+    ((SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01','9999-12-31','System','','Admin','System Admin');
+
+ --Password of users ILoveWFM123?
+ INSERT INTO Employment (tenant,person,employee_Id,employee_Status,username,password,email,primary_Employment,hire_Date,timezone,company,manager,hr,orgunit)
+VALUES
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS01'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),(SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS02'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS03'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),(SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'12345678',1,'jsmith','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','jsmith@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS04'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS01'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002348')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),(SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS02'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002348')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS03'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002348')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),(SELECT internal_id FROM Person WHERE person_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'12345676',1,'cgrant','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','cgrant@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS04'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002348')),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS01'),null,null,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING'),(SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS02'),null,null,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),(SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS03'),null,null,null),
+    ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),(SELECT internal_id FROM Person WHERE person_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'12345675',1,'admin','$2a$10$Qz0K9e/pO99pvSVxzHFtmuyxdr7xd/4EfRFSUDDFXLvY5s6E6TdGe','admin@company.com',true,'2025-01-01','Europe/Copenhagen',(SELECT internal_id FROM Company WHERE external_id = 'SS04'),null,null,null);
+
+INSERT INTO Employment_History (employment,start_Date,event,employee_Status,company,manager,hr,orgunit)
+VALUES
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS01'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002347')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS02'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002347')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS03'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002347')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS04'),null,null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002347')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS01'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST') and external_id='10002348')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS02'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING') and external_id='10002348')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS03'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST') and external_id='10002348')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345676' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS04'),(SELECT internal_id FROM Employment WHERE employee_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),null,(SELECT internal_id FROM orgunit WHERE tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV') and external_id='10002348')),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS01'),null,null,null),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS02'),null,null,null),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS03'),null,null,null),
+	((SELECT internal_id FROM Employment WHERE employee_Id = '12345675' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV')),'2025-01-01',1,1,(SELECT internal_id FROM Company WHERE external_id = 'SS04'),null,null,null);

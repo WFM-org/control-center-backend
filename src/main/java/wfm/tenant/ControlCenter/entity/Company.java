@@ -17,14 +17,14 @@ import java.util.UUID;
 public class Company {
     @Id
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "internalid", nullable = false)
+    @Column(name = "internal_id", nullable = false)
     private UUID id;
 
     @Column(name = "tenant", nullable = false)
     private UUID tenant;
 
     @NotNull(message = "External Id can not be null")
-    @Column(name = "externalid", nullable = false, length = 16)
+    @Column(name = "external_id", nullable = false, length = 16)
     private String externalId;
 
     @NotNull(message = "Name can not be null")
@@ -32,10 +32,10 @@ public class Company {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "localedefault", nullable = false)
-    private Locale localeDefault;
+    @JoinColumn(name = "default_language_pack", nullable = false)
+    private LanguagePack languagePackDefault;
 
-    @Column(name = "recordstatus", length = 64)
+    @Column(name = "record_status", length = 64)
     private Short recordStatus;
 
 }

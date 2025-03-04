@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "employmenthistory")
+@Table(name = "employment_history")
 public class Employmenthistory {
     @EmbeddedId
     private EmploymenthistoryId id;
@@ -19,7 +19,7 @@ public class Employmenthistory {
     @JoinColumn(name = "employment", nullable = false)
     private Employment employment;
 
-    @Column(name = "enddate")
+    @Column(name = "end_date")
     private LocalDate enddate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,6 +29,7 @@ public class Employmenthistory {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company", nullable = false)
     private Company company;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hr")
     private Employment hr;

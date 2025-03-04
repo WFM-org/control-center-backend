@@ -41,9 +41,8 @@ public class CompanyService {
             throw new IllegalArgumentException("Company name can not be null");
         }
         try {
-            //Mangler localeDefault og tenant afklar
             Company company = new Company();
-            //TODO: denne skal hgives ud af JWT token når merts common methods er klar.
+            //TODO: Værdien af tenant skal hives ud af JWT token når Bako's common methods er klar.
             company.setTenant(UUID.randomUUID());
             company.setExternalId(externalId);
             company.setName(companyName);

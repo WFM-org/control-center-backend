@@ -5,7 +5,7 @@ import wfm.tenant.ControlCenter.entity.Tenant;
 
 import java.util.UUID;
 
-@JsonPropertyOrder({"id", "tenantId", "tenantName", "adminEmail", "localeDefault"})
+@JsonPropertyOrder({"id", "tenantId", "tenantName", "adminEmail", "languagePackDefault"})
 public interface TenantProjection {
     UUID getId();
 
@@ -15,7 +15,7 @@ public interface TenantProjection {
 
     String getadminEmail();
 
-    LocaleProjection getLocaleDefault();
+    LanguagePackProjection getLanguagePackDefault();
 
     static TenantProjection mapToTenantProjection(Tenant tenant) {
         return new TenantProjection() {
@@ -40,16 +40,15 @@ public interface TenantProjection {
             }
 
             @Override
-            public LocaleProjection getLocaleDefault() {
-                return new LocaleProjection() {
+            public LanguagePackProjection getLanguagePackDefault() {
+                return new LanguagePackProjection() {
                     @Override
-                    public String getLocaleId() {
-                        return tenant.getLocaleDefault().getLocaleId();
-                    }
+                    public String getInternalId() {
+                        return tenant.getLanguagePackDefault().getInternalId();                    }
 
                     @Override
-                    public String getLocaleName() {
-                        return tenant.getLocaleDefault().getLocaleName();
+                    public String getLanguageName() {
+                        return tenant.getLanguagePackDefault().getLanguageName();
                     }
                 };
             }

@@ -17,7 +17,7 @@ public interface TenantRepository extends JpaRepository<Tenant, UUID> {
     @Query("SELECT t FROM Tenant t")
     Optional<Tenant> findByTenantName(String tenantName);
 
-    @Query("SELECT t FROM Tenant t LEFT JOIN FETCH t.localeDefault")
+    @Query("SELECT t FROM Tenant t LEFT JOIN FETCH t.languagePackDefault")
     List<TenantProjection> findAllTenants();
 
     @Query("SELECT t FROM Tenant t WHERE t.customer.id = :customerId")

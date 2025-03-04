@@ -14,14 +14,13 @@ import lombok.Setter;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "locale")
-public class Locale {
+@Table(name = "language_pack")
+public class LanguagePack {
     @Id
-    @Column(name = "localeid", nullable = false, length = 10)
-    private String localeId;
+    @Column(name = "internal_id", nullable = false, length = 10)
+    private String internalId;
 
     @Column(name = "name", nullable = false, length = 32)
-    private String localeName;
-
+    private String languageName;
 
 }

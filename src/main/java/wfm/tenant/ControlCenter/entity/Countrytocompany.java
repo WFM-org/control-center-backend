@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "countrytocompany")
+@Table(name = "country_to_company")
 public class Countrytocompany {
     @EmbeddedId
     private CountrytocompanyId id;

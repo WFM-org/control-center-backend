@@ -13,30 +13,30 @@ import java.util.UUID;
 public class Tenant {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "internalid", nullable = false)
+    @Column(name = "internal_id", nullable = false)
     private UUID Id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer", nullable = false)
     private Customer customer;
 
-    @Column(name = "tenantid", nullable = false, length = 16)
+    @Column(name = "tenant_id", nullable = false, length = 16)
     private String tenantId;
 
-    @Column(name = "recordstatus", nullable = false, length = 64)
+    @Column(name = "record_status", nullable = false, length = 64)
     private Short recordStatus;
 
-    @Column(name = "tenantname", nullable = false, length = 64)
+    @Column(name = "tenant_name", nullable = false, length = 64)
     private String tenantName;
 
-    @Column(name = "tenanttype", nullable = false, length = 64)
+    @Column(name = "tenant_type", nullable = false, length = 64)
     private String tenantType;
 
-    @Column(name = "adminemail", nullable = false, length = 128)
+    @Column(name = "admin_email", nullable = false, length = 128)
     private String adminEmail;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "localedefault", nullable = false)
-    private Locale localeDefault;
+    @JoinColumn(name = "communication_language", nullable = false)
+    private LanguagePack languagePackDefault;
 
 }
