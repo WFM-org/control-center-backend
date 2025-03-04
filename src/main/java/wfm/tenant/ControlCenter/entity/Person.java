@@ -21,11 +21,11 @@ public class Person {
     @JoinColumn(name = "tenant", nullable = false)
     private Tenant tenant;
 
-    @Column(name = "personid", nullable = false, length = 16)
+    @Column(name = "person_id", nullable = false, length = 16)
     private String personid;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "localedecision")
-    private Locale localedecision;
+    @JoinColumn(name = "language_pack")
+    private LanguagePack languagePack;
 
 }

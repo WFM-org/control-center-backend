@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Employment {
     @Id
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "internalid", nullable = false)
+    @Column(name = "internal_id", nullable = false)
     private UUID id;
 
     @Column(name = "tenant", nullable = false)
@@ -25,7 +25,7 @@ public class Employment {
     @JoinColumn(name = "person", nullable = false)
     private Person person;
 
-    @Column(name = "employeeid", nullable = false, length = 16)
+    @Column(name = "employee_id", nullable = false, length = 16)
     private String employeeid;
 
     @Column(name = "username", length = 128, nullable = false)
@@ -37,19 +37,19 @@ public class Employment {
     @Column(name = "password", length = 128,  nullable = false)
     private String password;
 
-    @Column(name = "employeestatus", nullable = false, length = 64)
+    @Column(name = "employee_status", nullable = false, length = 64)
     private Short employeeStatus;
 
-    @Column(name = "primaryemployment", nullable = false)
+    @Column(name = "primary_employment", nullable = false)
     private Boolean primaryemployment = false;
 
-    @Column(name = "hiredate", nullable = false)
+    @Column(name = "hire_date", nullable = false)
     private LocalDate hiredate;
 
-    @Column(name = "terminationdate")
+    @Column(name = "termination_date")
     private LocalDate terminationdate;
 
-    @Column(name = "freezeaccessfrom")
+    @Column(name = "freeze_access_from")
     private LocalDate freezeAccessFrom;
 
 }

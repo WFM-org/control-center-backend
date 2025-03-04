@@ -8,6 +8,7 @@ import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.repository.CompanyRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,6 +36,8 @@ public class CompanyService {
     public void createCompany(String externalId, String companyName) {
         try {
             Company company = new Company();
+            //TODO: Værdien af tenant skal hives ud af JWT token når Bako's common methods er klar.
+            company.setTenant(UUID.randomUUID());
             company.setExternalId(externalId);
             company.setName(companyName);
             companyRepository.saveAndFlush(company);
