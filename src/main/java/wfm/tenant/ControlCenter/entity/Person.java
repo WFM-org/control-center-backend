@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Person {
     @Id
     @ColumnDefault("gen_random_uuid()")
-    @Column(name = "internalid", nullable = false)
+    @Column(name = "internal_id", nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

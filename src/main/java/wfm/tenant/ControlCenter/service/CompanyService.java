@@ -34,6 +34,8 @@ public class CompanyService {
 
     @Transactional
     public void createCompany(String externalId, String companyName) {
+        validateNotBlank(externalId, "Company external id");
+        validateNotBlank(companyName, "Company name");
         try {
             Company company = new Company();
             //TODO: Værdien af tenant skal hives ud af JWT token når Bako's common methods er klar.
@@ -44,6 +46,12 @@ public class CompanyService {
             log.info("Company: {} is successfully created! ", company.getName());
         } catch (Exception e) {
             log.error(e.getMessage());
+        }
+    }
+
+    private void validateNotBlank(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " can not be empty");
         }
     }
 }
