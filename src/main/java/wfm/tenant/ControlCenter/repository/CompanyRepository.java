@@ -9,13 +9,17 @@ import wfm.tenant.ControlCenter.entity.Company;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface CompanyRepository extends JpaRepository<Company, Long> {
+public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
 
     @Query("SELECT c FROM Company c")
     List<CompanyProjection> findAllCompanies();
+
+    @Query("SELECT c FROM Company c WHERE c.id = :id")
+    CompanyProjection findCompanyById(UUID id);
 
     @Query("SELECT c FROM Company c WHERE c.externalId = :externalId")
     List<CompanyProjection> findCompaniesByCompanyExternalId(@Param("externalId") String companyExternalId);

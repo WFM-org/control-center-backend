@@ -7,11 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import wfm.tenant.ControlCenter.entity.Company;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
+import wfm.tenant.ControlCenter.exception.CompanyNotFoundException;
 import wfm.tenant.ControlCenter.service.CompanyService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/company")
@@ -74,6 +77,28 @@ public class CompanyController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Company created succesfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating company: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/deleteCompany/{companyId}")
+    public ResponseEntity<CompanyProjection> deleteCompany(@PathVariable UUID companyId) {
+        try {
+            CompanyProjection deleted = companyService.deleteCompanyById(companyId);
+            log.info("Company with id {} is deleted successfully", companyId);
+            return ResponseEntity.ok(deleted);
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping("/updateCompany/{companyId}")
+    public ResponseEntity<CompanyProjection> updateCompany(@PathVariable UUID companyId, @RequestBody Company request) {
+        try {
+            CompanyProjection updated = companyService.updateCompany(request, companyId);
+            log.info("Company with id {} is updated successfully", companyId);
+            return ResponseEntity.ok(updated);
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }
