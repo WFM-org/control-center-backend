@@ -24,7 +24,7 @@ public class FieldValidationService {
             Object existingValue = existingWrapper.getPropertyValue(field);
 
             if (updatedValue != null && !updatedValue.equals(existingValue)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field '" + field + "' is not updateable");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Field %s is not updatable", field));
             }
         }
     }
