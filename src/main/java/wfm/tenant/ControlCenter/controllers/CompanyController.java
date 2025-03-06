@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import wfm.tenant.ControlCenter.entity.Company;
+import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.exception.CompanyNotFoundException;
 import wfm.tenant.ControlCenter.service.CompanyService;
@@ -99,6 +100,9 @@ public class CompanyController {
             return ResponseEntity.ok(updated);
         } catch (CompanyNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImmutableUpdateException e) {
+            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

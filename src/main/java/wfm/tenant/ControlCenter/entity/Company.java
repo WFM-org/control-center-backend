@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import wfm.tenant.ControlCenter.fieldValidators.ImmutableField;
+import wfm.tenant.ControlCenter.annotations.ImmutableField;
 
 import java.util.UUID;
 

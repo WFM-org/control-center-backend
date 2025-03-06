@@ -1,4 +1,4 @@
-package wfm.tenant.ControlCenter.fieldValidators;
+package wfm.tenant.ControlCenter.annotations;
 
 
 import java.lang.annotation.ElementType;

@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import wfm.tenant.ControlCenter.entity.Company;
 import wfm.tenant.ControlCenter.enums.RecordStatus;
 import wfm.tenant.ControlCenter.exception.CompanyNotFoundException;
-import wfm.tenant.ControlCenter.fieldValidators.FieldsValidation;
+import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
+import wfm.tenant.ControlCenter.fieldValidators.ImmutableFieldValidation;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.repository.CompanyRepository;
 import wfm.tenant.ControlCenter.service.utils.ServiceUtils;
@@ -72,11 +73,11 @@ public class CompanyService {
         }
     }
 
-    public CompanyProjection updateCompany(Company newCompany, UUID companyId) throws CompanyNotFoundException {
+    public CompanyProjection updateCompany(Company newCompany, UUID companyId) throws CompanyNotFoundException, ImmutableUpdateException {
         Optional<Company> byId = companyRepository.findById(companyId);
         if(byId.isPresent()) {
             Company company = byId.get();
-            FieldsValidation.validate(newCompany, company);
+            ImmutableFieldValidation.validate(newCompany, company);
             BeanUtils.copyProperties(newCompany, company, ServiceUtils.getNullPropertyNames(newCompany));
 
             companyRepository.save(company);
