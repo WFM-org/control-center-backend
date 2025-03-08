@@ -8,6 +8,7 @@ import wfm.tenant.ControlCenter.entity.Company;
 import wfm.tenant.ControlCenter.enums.RecordStatus;
 import wfm.tenant.ControlCenter.exception.CompanyNotFoundException;
 import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
+import wfm.tenant.ControlCenter.exception.TenantNotFoundException;
 import wfm.tenant.ControlCenter.fieldValidators.ImmutableFieldValidation;
 import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.repository.CompanyRepository;
@@ -22,9 +23,11 @@ import java.util.UUID;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final LanguagePackService languagePackService;
 
-    public CompanyService(CompanyRepository companyRepository) {
+    public CompanyService(CompanyRepository companyRepository, LanguagePackService languagePackService) {
         this.companyRepository = companyRepository;
+        this.languagePackService = languagePackService;
     }
 
     public List<CompanyProjection> getAllCompanies() {
@@ -40,20 +43,21 @@ public class CompanyService {
     }
 
     @Transactional
-    public void createCompany(String externalId, String companyName) {
-        validateNotBlank(externalId, "Company external id");
+    public Company createCompany(String externalId, String companyName, UUID tenantId) throws TenantNotFoundException {
+        validateNotBlank(externalId, "Company external Id");
         validateNotBlank(companyName, "Company name");
-        try {
-            Company company = new Company();
-            //TODO: Værdien af tenant skal hives ud af JWT token når Bako's common methods er klar.
-            company.setTenant(UUID.randomUUID());
-            company.setExternalId(externalId);
-            company.setName(companyName);
-            companyRepository.saveAndFlush(company);
-            log.info("Company: {} is successfully created! ", company.getName());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        validateNotBlank(tenantId.toString(), "Tenant Internal Id");
+
+        Company company = new Company();
+        company.setTenant(tenantId);
+        company.setExternalId(externalId);
+        company.setName(companyName);
+        company.setRecordStatus(RecordStatus.ACTIVE.getValue());
+        company.setLanguagePackDefault(languagePackService.getDefaultLanguagePackByTenantId(tenantId));
+
+        Company created = companyRepository.saveAndFlush(company);
+        log.info("Successfully created company with ID: {}", created.getId());
+        return created;
     }
 
     public CompanyProjection deleteCompanyById(UUID companyId) throws CompanyNotFoundException {
