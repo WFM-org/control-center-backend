@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+import wfm.tenant.ControlCenter.annotations.ImmutableField;
 
 import java.util.UUID;
 
@@ -18,9 +19,11 @@ public class Company {
     @Id
     @ColumnDefault("gen_random_uuid()")
     @Column(name = "internal_id", nullable = false)
+    @ImmutableField
     private UUID id;
 
     @Column(name = "tenant", nullable = false)
+    @ImmutableField
     private UUID tenant;
 
     @NotNull(message = "External Id can not be null")
