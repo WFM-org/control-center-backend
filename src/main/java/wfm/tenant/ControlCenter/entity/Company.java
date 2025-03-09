@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "company")
 public class Company {
     @Id
-    @ColumnDefault("gen_random_uuid()")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "internal_id", nullable = false)
     @ImmutableField
     private UUID id;

@@ -7,11 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import wfm.tenant.ControlCenter.entity.Company;
-import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
-import wfm.tenant.ControlCenter.projection.CompanyProjection;
 import wfm.tenant.ControlCenter.exception.CompanyNotFoundException;
+import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
+import wfm.tenant.ControlCenter.exception.TenantNotFoundException;
+import wfm.tenant.ControlCenter.projection.CompanyProjection;
+import wfm.tenant.ControlCenter.projection.TenantProjection;
+import wfm.tenant.ControlCenter.repository.TenantRepository;
 import wfm.tenant.ControlCenter.service.CompanyService;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class CompanyController {
     private static final Logger log = LoggerFactory.getLogger(CompanyController.class);
 
     private final CompanyService companyService;
+    private final TenantRepository tenantRepository;
 
     @GetMapping("/getAllCompanies")
     public ResponseEntity<List<CompanyProjection>> getAllCompanies() {
@@ -72,12 +75,14 @@ public class CompanyController {
     }
 
     @PostMapping("/createCompany")
-    public ResponseEntity<String> createCompany(@Valid @RequestBody Company request) {
+    public ResponseEntity<Company> createCompany(@Valid @RequestBody Company request) {
         try {
-            companyService.createCompany(request.getExternalId(), request.getName());
-            return ResponseEntity.status(HttpStatus.CREATED).body("Company created succesfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating company: " + e.getMessage());
+            TenantProjection first = tenantRepository.findAllTenants().getFirst();
+            Company company = companyService.createCompany(request.getExternalId(),
+                    request.getName(), first.getId());
+            return ResponseEntity.ok(company);
+        } catch (TenantNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

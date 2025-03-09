@@ -7,11 +7,13 @@ import wfm.tenant.ControlCenter.entity.LanguagePackEnabled;
 import wfm.tenant.ControlCenter.entity.LanguagePack;
 import wfm.tenant.ControlCenter.entity.LanguagePackEnabledId;
 import wfm.tenant.ControlCenter.entity.Tenant;
+import wfm.tenant.ControlCenter.exception.TenantNotFoundException;
 import wfm.tenant.ControlCenter.repository.LanguagePackEnabledRepository;
 import wfm.tenant.ControlCenter.repository.LanguagePackRepository;
 import wfm.tenant.ControlCenter.repository.TenantRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -63,6 +65,15 @@ public class LanguagePackService {
 
     public List<String> getLanguagePacksByTenant(UUID tenantId) {
         return languagePackEnabledRepository.findLanguagePacksByTenantId(tenantId);
+    }
+
+    public LanguagePack getDefaultLanguagePackByTenantId(UUID tenantId) throws TenantNotFoundException {
+        Optional<Tenant> tenant = tenantRepository.findById(tenantId);
+        if(tenant.isEmpty()) {
+            log.error("Tenant with ID {} could not be found", tenantId);
+            throw new TenantNotFoundException(tenantId);
+        }
+        return tenant.get().getLanguagePackDefault();
     }
 
 }
