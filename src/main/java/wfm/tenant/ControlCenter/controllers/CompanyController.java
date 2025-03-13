@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/company")
+@RequestMapping("/cc/company")
 @RequiredArgsConstructor
 public class CompanyController {
 

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/languagePack")
+@RequestMapping("/cc/languagePack")
 @RequiredArgsConstructor
 @Slf4j
 public class LanguagePackController {
