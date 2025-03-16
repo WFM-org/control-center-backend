@@ -3,11 +3,13 @@ package wfm.tenant.ControlCenter.service;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import wfm.tenant.ControlCenter.entity.LanguagePackEnabled;
 import wfm.tenant.ControlCenter.entity.LanguagePack;
+import wfm.tenant.ControlCenter.entity.LanguagePackEnabled;
 import wfm.tenant.ControlCenter.entity.LanguagePackEnabledId;
 import wfm.tenant.ControlCenter.entity.Tenant;
+import wfm.tenant.ControlCenter.exception.LanguagePackNotFoundException;
 import wfm.tenant.ControlCenter.exception.TenantNotFoundException;
+import wfm.tenant.ControlCenter.projection.LanguagePackEnabledProjection;
 import wfm.tenant.ControlCenter.repository.LanguagePackEnabledRepository;
 import wfm.tenant.ControlCenter.repository.LanguagePackRepository;
 import wfm.tenant.ControlCenter.repository.TenantRepository;
@@ -29,7 +31,7 @@ public class LanguagePackService {
         this.tenantRepository = tenantRepository;
     }
 
-    public List<String> getLanguagePacksByTenantId(UUID tenantId) {
+    public List<LanguagePackEnabledProjection> getLanguagePacksByTenantId(UUID tenantId) {
         return languagePackEnabledRepository.findLanguagePacksByTenantId(tenantId);
     }
 
@@ -55,16 +57,10 @@ public class LanguagePackService {
 
         LanguagePackEnabled languagePackEnabled = new LanguagePackEnabled();
         languagePackEnabled.setId(languagePackEnabledId);
-        languagePackEnabled.setLanguagePack(languagePack);
-        languagePackEnabled.setTenant(tenant);
         languagePackEnabledRepository.save(languagePackEnabled);
 
         log.info("Language pack {} assigned to Tenant {}", languagePackId, tenantInternalId);
         return true;
-    }
-
-    public List<String> getLanguagePacksByTenant(UUID tenantId) {
-        return languagePackEnabledRepository.findLanguagePacksByTenantId(tenantId);
     }
 
     public LanguagePack getDefaultLanguagePackByTenantId(UUID tenantId) throws TenantNotFoundException {
@@ -76,4 +72,11 @@ public class LanguagePackService {
         return tenant.get().getLanguagePackDefault();
     }
 
+    public void unassignLanguagePack(String languagePackId, UUID tenantId) throws TenantNotFoundException, LanguagePackNotFoundException {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new TenantNotFoundException(tenantId));
+        LanguagePackEnabled byId = languagePackEnabledRepository.findById(new LanguagePackEnabledId(languagePackId, tenant.getId()))
+                .orElseThrow(() -> new LanguagePackNotFoundException(languagePackId, tenantId));
+        languagePackEnabledRepository.delete(byId);
+    }
 }

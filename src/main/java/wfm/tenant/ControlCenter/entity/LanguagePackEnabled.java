@@ -13,7 +13,7 @@ public class LanguagePackEnabled {
     private LanguagePackEnabledId id;
 
     @MapsId("language_pack")
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "language_pack", referencedColumnName = "internal_id", nullable = false)
     private LanguagePack languagePack;
 
