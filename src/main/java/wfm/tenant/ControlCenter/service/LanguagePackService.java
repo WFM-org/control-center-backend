@@ -7,6 +7,7 @@ import wfm.tenant.ControlCenter.entity.LanguagePack;
 import wfm.tenant.ControlCenter.entity.LanguagePackEnabled;
 import wfm.tenant.ControlCenter.entity.LanguagePackEnabledId;
 import wfm.tenant.ControlCenter.entity.Tenant;
+import wfm.tenant.ControlCenter.exception.LanguagePackAlreadyAssignedException;
 import wfm.tenant.ControlCenter.exception.LanguagePackNotFoundException;
 import wfm.tenant.ControlCenter.exception.TenantNotFoundException;
 import wfm.tenant.ControlCenter.projection.LanguagePackEnabledProjection;
@@ -40,27 +41,23 @@ public class LanguagePackService {
     }
 
     @Transactional
-    public boolean addTenantLanguagePack(UUID tenantInternalId, String languagePackId) {
-        Tenant tenant = tenantRepository.findById(tenantInternalId)
-                .orElseThrow(() -> new IllegalArgumentException("Tenant not found"));
+    public void assignLanguagePack(UUID tenantId, String languagePackId) throws TenantNotFoundException, LanguagePackAlreadyAssignedException, LanguagePackNotFoundException {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new TenantNotFoundException(tenantId));
 
         LanguagePack languagePack = languagePackRepository.findById(languagePackId)
-                .orElseThrow(() -> new IllegalArgumentException("Language Pack not found"));
+                .orElseThrow(() -> new LanguagePackNotFoundException(languagePackId, tenantId));
 
-        LanguagePackEnabledId languagePackEnabledId = new LanguagePackEnabledId(languagePack.getInternalId(), tenant.getId());
-
-        //lad vær tilføj hvis den eksisterer
-        if (languagePackEnabledRepository.existsById(languagePackEnabledId)) {
-            log.warn("Language pack {} is already assigned to Tenant {}", languagePackId, tenantInternalId);
-            return false;
+        Optional<LanguagePackEnabled> existId = languagePackEnabledRepository.findById(new LanguagePackEnabledId(languagePackId, tenant.getId()));
+        if (existId.isPresent()) {
+            throw new LanguagePackAlreadyAssignedException(languagePackId, tenantId);
         }
 
         LanguagePackEnabled languagePackEnabled = new LanguagePackEnabled();
-        languagePackEnabled.setId(languagePackEnabledId);
+        languagePackEnabled.setId(new LanguagePackEnabledId(languagePack.getInternalId(), tenant.getId()));
+        languagePackEnabled.setLanguagePack(languagePack);
+        languagePackEnabled.setTenant(tenant);
         languagePackEnabledRepository.save(languagePackEnabled);
-
-        log.info("Language pack {} assigned to Tenant {}", languagePackId, tenantInternalId);
-        return true;
     }
 
     public LanguagePack getDefaultLanguagePackByTenantId(UUID tenantId) throws TenantNotFoundException {
@@ -72,6 +69,7 @@ public class LanguagePackService {
         return tenant.get().getLanguagePackDefault();
     }
 
+    @Transactional
     public void unassignLanguagePack(String languagePackId, UUID tenantId) throws TenantNotFoundException, LanguagePackNotFoundException {
         Tenant tenant = tenantRepository.findById(tenantId)
                 .orElseThrow(() -> new TenantNotFoundException(tenantId));
