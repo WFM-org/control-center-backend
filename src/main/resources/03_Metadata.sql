@@ -1,19 +1,13 @@
 INSERT INTO Allowed_Field_Overrides
 VALUES
-    ('100','Person', 'personId'),
-    ('101','Person', 'firstName'),
-    ('102','Person', 'middleName'),
-    ('103','Person', 'lastName'),
-    ('104','Person', 'displayName'),
-    ('200','Person_History', 'firstName'),
-    ('201','Person_History', 'middleName'),
-    ('202','Person_History', 'lastName'),
-    ('203','Person_History', 'displayName'),
-    ('300','Employment','employeeId'),
-    ('400','Employment','hr'),
-    ('401','Employment','manager'),
-    ('402','Employment_History','hr'),
-    ('403','Employment_History','manager') ;
+    ('100','person', 'person_id'),
+    ('200','person_History', 'first_name'),
+    ('201','person_History', 'middle_name'),
+    ('202','person_History', 'last_name'),
+    ('203','person_History', 'display_name'),
+    ('300','employment','employee_id'),
+    ('402','employment_history','hr'),
+    ('403','employment_history','manager') ;
 
 INSERT INTO language_pack
 VALUES
