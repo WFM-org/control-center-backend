@@ -8,6 +8,8 @@ drop table IF EXISTS company cascade;
 drop table IF EXISTS language_pack_enabled cascade;
 drop table IF EXISTS orgunit_history cascade;
 drop table IF EXISTS orgunit cascade;
+drop table IF EXISTS cost_center cascade;
+drop table IF EXISTS cost_center_history cascade;
 drop table IF EXISTS tenant_sequence cascade;
 drop table IF EXISTS field_override cascade;
 drop table IF EXISTS allowed_field_overrides cascade;
@@ -83,8 +85,8 @@ CREATE TABLE tenant_sequence (
     name varchar(32) not null default 'default',
     start_value bigint not null default 1,
     increment_by int not null default 1,
-    current_value bigint not null default 1
-
+    current_value bigint not null default 1,
+    CONSTRAINT fk_tenant_sequence_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tenant_custom_code (
@@ -94,11 +96,12 @@ CREATE TABLE tenant_custom_code (
 
 );
 
+
 CREATE TABLE tenant_general_config (
     tenant UUID primary key,
     employee_id_sequence uuid not null,
     CONSTRAINT fk_tenantgeneralconfig_employeeidsequence FOREIGN KEY (employee_id_sequence) REFERENCES tenant_sequence (internal_id),
-    CONSTRAINT fk_tenantgeneralconfig_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id)
+    CONSTRAINT fk_tenantgeneralconfig_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
 );
 
 CREATE TABLE field_override (
@@ -115,12 +118,8 @@ CREATE TABLE orgunit
     internal_id UUID PRIMARY key DEFAULT gen_random_uuid(),
     tenant UUID NOT NULL,
     external_id VARCHAR(16) NOT NULL,
-    name VARCHAR(64) NOT NULL,
-    record_status smallint not null,
-    parent_unit UUID,
     CONSTRAINT unique_orgunit_external_id UNIQUE (tenant, external_id),
-    CONSTRAINT fk_orgunit_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id),
-    CONSTRAINT fk_orgunit_parentunit FOREIGN KEY (parent_unit) REFERENCES orgunit (internal_id)
+    CONSTRAINT fk_orgunit_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
 );
 
 CREATE TABLE orgunit_history
@@ -132,17 +131,38 @@ CREATE TABLE orgunit_history
     record_status smallint not null,
     parent_unit UUID,
     PRIMARY KEY (orgunit, start_date),
-    CONSTRAINT fk_orgunit_parentunit FOREIGN KEY (parent_unit) REFERENCES orgunit (internal_id)
+    CONSTRAINT fk_orgunit_parentunit FOREIGN KEY (parent_unit) REFERENCES orgunit (internal_id) ON DELETE CASCADE
 );
+
+CREATE TABLE cost_center
+(
+    internal_id UUID PRIMARY key DEFAULT gen_random_uuid(),
+    tenant UUID NOT NULL,
+    external_id VARCHAR(16) NOT NULL,
+    CONSTRAINT unique_costcenter_external_id UNIQUE (tenant, external_id),
+    CONSTRAINT fk_costcenter_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
+);
+
+CREATE TABLE  cost_center_history
+(
+    cost_center UUID,
+    start_date DATE,
+    end_date DATE,
+    name VARCHAR(64) NOT NULL,
+    record_status smallint not null,
+    parent_unit UUID,
+    PRIMARY KEY (cost_center, start_date),
+    CONSTRAINT fk_costcenter_parentunit FOREIGN KEY (parent_unit) REFERENCES cost_center (internal_id) ON DELETE CASCADE
+);
+
 CREATE TABLE language_pack_enabled
 (
     language_pack  VARCHAR(10),
     tenant UUID ,
     PRIMARY KEY (language_pack, tenant),
     CONSTRAINT fk_language_packenabled_language FOREIGN KEY (language_pack) REFERENCES language_pack (internal_id),
-    CONSTRAINT fk_language_packenabled_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id)
+    CONSTRAINT fk_language_packenabled_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
     );
-
 
 CREATE TABLE company
 (
@@ -154,7 +174,7 @@ CREATE TABLE company
     record_status smallint not null,
     default_timezone varChar(64),
     CONSTRAINT unique_company_external_id UNIQUE (tenant, external_id),
-    CONSTRAINT fk_company_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id),
+    CONSTRAINT fk_company_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_company_language_pack FOREIGN KEY (default_language_pack) REFERENCES language_pack (internal_id),
     CONSTRAINT fk_company_timezone FOREIGN KEY (default_timezone) REFERENCES timezone (tz_name)
 );
@@ -166,7 +186,7 @@ CREATE TABLE country_to_company
     company UUID,
     PRIMARY KEY (country, company),
     CONSTRAINT fk_countrytocompany_country FOREIGN KEY (country) REFERENCES country (isocode3),
-    CONSTRAINT fk_countrytocompany_company FOREIGN KEY (company) REFERENCES company (internal_id)
+    CONSTRAINT fk_countrytocompany_company FOREIGN KEY (company) REFERENCES company (internal_id) ON DELETE CASCADE
 );
 
 
@@ -176,12 +196,8 @@ CREATE TABLE person
     tenant UUID NOT NULL,
     person_id VARCHAR(16) NOT NULL,
     language_pack VARCHAR(10),
-    first_name VARCHAR(64),
-    middle_name VARCHAR(64),
-    last_name VARCHAR(64),
-    display_name VARCHAR(128),
     CONSTRAINT unique_person_personid UNIQUE (tenant, person_id),
-    CONSTRAINT fk_person_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id),
+    CONSTRAINT fk_person_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_person_language_pack FOREIGN KEY (language_pack) REFERENCES language_pack (internal_id)
 );
 
@@ -196,7 +212,7 @@ CREATE TABLE person_history
     last_name VARCHAR(64),
     display_name VARCHAR(128),
     PRIMARY KEY (person, start_date),
-    CONSTRAINT fk_personhistory_person FOREIGN KEY (person) REFERENCES person (internal_id)
+    CONSTRAINT fk_personhistory_person FOREIGN KEY (person) REFERENCES person (internal_id) ON DELETE CASCADE
 );
 
 
@@ -207,27 +223,19 @@ CREATE TABLE employment
     person UUID NOT NULL,
     employee_id VARCHAR(16) NOT NULL,
     username VARCHAR(16) NOT NULL,
+    email VARCHAR(126),
     password varchar(256),
     login_method int default 0 check (login_method in(0,1,2)),--0 = Both, 1 = password, 2 = SSO
-    email VARCHAR(126),
-    employee_status smallint not null,
     primary_employment BOOLEAN NOT NULL,
+    timezone varchar(64),
     hire_date DATE NOT NULL,
     termination_date DATE,
-    timezone varchar(64),
-    company UUID NOT NULL,
-    manager UUID,
-    hr UUID,
-    orgunit UUID,
     freeze_access_from DATE,
     CONSTRAINT unique_employment_employeeID UNIQUE (tenant, employee_id),
     CONSTRAINT unique_employment_username UNIQUE (tenant, username),
-    CONSTRAINT fk_employment_orgunit FOREIGN KEY (orgunit) REFERENCES orgunit (internal_id),
     CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id),
-    CONSTRAINT fk_employment_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name),
-    CONSTRAINT fk_employment_company FOREIGN KEY (company) REFERENCES company (internal_id),
-    CONSTRAINT fk_employment_manager FOREIGN KEY (manager) REFERENCES employment (internal_id),
-    CONSTRAINT fk_employment_hr FOREIGN KEY (hr) REFERENCES employment (internal_id)
+    CONSTRAINT fk_employment_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name)
+
 );
 
 CREATE TABLE employment_history
@@ -241,12 +249,12 @@ CREATE TABLE employment_history
     manager UUID,
     hr UUID,
     orgunit UUID,
+    cost_center UUID,
     PRIMARY KEY (employment, start_date),
-    CONSTRAINT fk_employmenthistory_orgunit FOREIGN KEY (orgunit) REFERENCES orgunit (internal_id),
+    CONSTRAINT fk_employmenthistory_orgunit FOREIGN KEY (orgunit) REFERENCES orgunit (internal_id) ON DELETE CASCADE,
+    CONSTRAINT fk_employmenthistory_cost_center FOREIGN KEY (cost_center) REFERENCES cost_center (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_id FOREIGN KEY (employment) REFERENCES employment (internal_id),
-    CONSTRAINT fk_employmenthistory_company FOREIGN KEY (company) REFERENCES company (internal_id),
+    CONSTRAINT fk_employmenthistory_company FOREIGN KEY (company) REFERENCES company (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_manager FOREIGN KEY (manager) REFERENCES employment (internal_id),
     CONSTRAINT fk_employmenthistory_hr FOREIGN KEY (hr) REFERENCES employment (internal_id)
 );
-
-
