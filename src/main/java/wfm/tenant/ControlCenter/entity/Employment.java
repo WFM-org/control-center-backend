@@ -37,9 +37,6 @@ public class Employment {
     @Column(name = "password", length = 128,  nullable = false)
     private String password;
 
-    @Column(name = "employee_status", nullable = false, length = 64)
-    private Short employeeStatus;
-
     @Column(name = "primary_employment", nullable = false)
     private Boolean primaryemployment = false;
 

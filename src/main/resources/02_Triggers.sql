@@ -384,3 +384,116 @@ CREATE TRIGGER trg_tenant_default_values
 AFTER INSERT ON tenant
 FOR EACH ROW
 EXECUTE FUNCTION func_tenant_default_values();
+
+CREATE OR REPLACE FUNCTION insert_cost_center_history_end_date()
+RETURNS TRIGGER AS E'
+BEGIN
+    -- Set end_date for the new record
+    UPDATE cost_center_history
+    SET "end_date" = COALESCE(
+        (SELECT start_date - INTERVAL ''1 day''
+         FROM cost_center_history
+         WHERE cost_center = NEW.cost_center
+         AND start_date > NEW.start_date
+         ORDER BY start_date ASC
+         LIMIT 1),
+        DATE ''9999-12-31''
+    )
+    WHERE cost_center = NEW.cost_center
+    AND start_date = NEW.start_date;
+
+    -- Adjust end_date of the previous record
+    UPDATE cost_center_history
+    SET end_date = NEW.start_date - INTERVAL ''1 day''
+    WHERE cost_center = NEW.cost_center
+    AND start_date = (
+        SELECT MAX(start_date)
+        FROM cost_center_history
+        WHERE cost_center = NEW.cost_center
+        AND start_date < NEW.start_date
+    );
+
+    RETURN NEW;
+END;
+' LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_insert_cost_center_history_end_date
+AFTER INSERT
+ON cost_center_history
+FOR EACH ROW
+EXECUTE FUNCTION insert_cost_center_history_end_date();
+
+
+
+CREATE OR REPLACE FUNCTION update_cost_center_history_end_date()
+RETURNS TRIGGER AS E'
+BEGIN
+    -- Update end_date for the current row
+    UPDATE cost_center_history
+    SET end_date = COALESCE(
+        (SELECT start_date - INTERVAL ''1 day''
+         FROM cost_center_history
+         WHERE cost_center = NEW.cost_center
+         AND start_date > NEW.start_date
+         ORDER BY start_date ASC
+         LIMIT 1),
+        DATE ''9999-12-31''
+    )
+    WHERE cost_center = NEW."cost_center"
+    AND start_date = NEW.start_date;
+
+    -- Adjust end_date of the previous record
+    UPDATE cost_center_history
+    SET end_date = NEW.start_date - INTERVAL ''1 day''
+    WHERE cost_center = NEW.cost_center
+    AND start_date = (
+        SELECT MAX(start_date)
+        FROM cost_center_history
+        WHERE cost_center = NEW.cost_center
+        AND start_date < NEW.start_date
+    );
+
+    RETURN NEW;
+END;
+' LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_cost_center_history_end_date
+AFTER UPDATE
+ON cost_center_history
+FOR EACH ROW
+WHEN (OLD.start_date IS DISTINCT FROM NEW.start_date)  -- Corrected column name
+EXECUTE FUNCTION update_cost_center_history_end_date();
+
+
+
+CREATE OR REPLACE FUNCTION func_cost_center_history_set_end_date_ondelete()
+RETURNS TRIGGER AS E'
+BEGIN
+    -- Update the previous record’s end_date if a record is deleted
+    UPDATE cost_center_history
+    SET end_date = COALESCE(
+        (SELECT start_date - INTERVAL ''1 day''
+         FROM cost_center_history
+         WHERE cost_center = OLD.cost_center
+         AND start_date > OLD.start_date
+         ORDER BY start_date ASC
+         LIMIT 1),
+        DATE ''9999-12-31''
+    )
+    WHERE cost_center = OLD.cost_center
+    AND start_date = (
+        SELECT MAX(start_date)
+        FROM cost_center_history
+        WHERE cost_center = OLD.cost_center
+        AND start_date < OLD.start_date
+    );
+
+    RETURN OLD;
+END;
+' LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_cost_center_history_set_end_date_ondelete
+AFTER DELETE
+ON cost_center_history
+FOR EACH ROW
+EXECUTE FUNCTION func_cost_center_history_set_end_date_ondelete();
