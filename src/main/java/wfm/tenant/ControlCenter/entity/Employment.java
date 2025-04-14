@@ -40,12 +40,6 @@ public class Employment {
     @Column(name = "primary_employment", nullable = false)
     private Boolean primaryemployment = false;
 
-    @Column(name = "hire_date", nullable = false)
-    private LocalDate hiredate;
-
-    @Column(name = "termination_date")
-    private LocalDate terminationdate;
-
     @Column(name = "freeze_access_from")
     private LocalDate freezeAccessFrom;
 
