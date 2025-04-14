@@ -6,8 +6,7 @@ import java.util.UUID;
 
 @Getter
 public class TenantNotFoundException extends Throwable {
-    private UUID tenantId;
-
+    private final UUID tenantId;
     public TenantNotFoundException(UUID tenantId) {
         this.tenantId = tenantId;
     }
