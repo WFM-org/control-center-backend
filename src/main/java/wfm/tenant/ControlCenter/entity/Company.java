@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import wfm.tenant.ControlCenter.annotations.ImmutableField;
+import wfm.tenant.ControlCenter.fieldValidators.ImmutableField;
 
 import java.util.UUID;
 

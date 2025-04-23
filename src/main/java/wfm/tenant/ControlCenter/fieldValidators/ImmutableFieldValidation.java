@@ -2,7 +2,6 @@ package wfm.tenant.ControlCenter.fieldValidators;
 
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Component;
-import wfm.tenant.ControlCenter.annotations.ImmutableField;
 import wfm.tenant.ControlCenter.exception.ImmutableUpdateException;
 
 import java.lang.reflect.Field;

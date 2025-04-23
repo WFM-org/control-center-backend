@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wfm.tenant.ControlCenter.dto.AssignLanguagePackDTO;
 import wfm.tenant.ControlCenter.entity.LanguagePack;
 import wfm.tenant.ControlCenter.exception.LanguagePackAlreadyAssignedException;
 import wfm.tenant.ControlCenter.exception.LanguagePackNotFoundException;
@@ -16,7 +15,6 @@ import wfm.tenant.ControlCenter.repository.TenantRepository;
 import wfm.tenant.ControlCenter.service.LanguagePackService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/cc/languagePack")
