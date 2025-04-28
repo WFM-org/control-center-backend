@@ -1,9 +1,11 @@
+
 -- START DROP
 drop table IF EXISTS employment_history cascade;
 drop table IF EXISTS employment cascade;
 drop table IF EXISTS person_History cascade;
 drop table IF EXISTS person cascade;
 drop table IF EXISTS country_to_company cascade;
+drop table IF EXISTS company_history cascade;
 drop table IF EXISTS company cascade;
 drop table IF EXISTS language_pack_enabled cascade;
 drop table IF EXISTS orgunit_history cascade;
@@ -20,9 +22,17 @@ drop table IF EXISTS customer cascade;
 drop table IF EXISTS language_pack cascade;
 drop table IF EXISTS country cascade;
 drop table IF EXISTS timezone cascade;
-drop extension if exists pgcrypto;
+drop table If EXISTS tm_employee cascade;
 
+drop extension if exists pgcrypto;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE tm_employee (
+    employee_id UUID PRIMARY key DEFAULT gen_random_uuid(),
+	full_name VARCHAR(64) NOT NULL,
+	username VARCHAR(64) NOT NULL,
+    password VARCHAR(64) NOT NULL
+);
 
 CREATE TABLE allowed_field_overrides (
     id int primary key,
@@ -124,13 +134,14 @@ CREATE TABLE orgunit
 
 CREATE TABLE orgunit_history
 (
-    orgunit UUID,
+    parent UUID,
     start_date DATE,
     end_date DATE,
     name VARCHAR(64) NOT NULL,
     record_status smallint not null,
     parent_unit UUID,
-    PRIMARY KEY (orgunit, start_date),
+    PRIMARY KEY (parent, start_date),
+    CONSTRAINT fk_orgunit_ref FOREIGN KEY (parent) REFERENCES orgunit (internal_id) ON DELETE cascade,
     CONSTRAINT fk_orgunit_parentunit FOREIGN KEY (parent_unit) REFERENCES orgunit (internal_id) ON DELETE CASCADE
 );
 
@@ -145,13 +156,14 @@ CREATE TABLE cost_center
 
 CREATE TABLE  cost_center_history
 (
-    cost_center UUID,
+    parent UUID,
     start_date DATE,
     end_date DATE,
     name VARCHAR(64) NOT NULL,
     record_status smallint not null,
     parent_unit UUID,
-    PRIMARY KEY (cost_center, start_date),
+    PRIMARY KEY (parent, start_date),
+    CONSTRAINT fk_costcenter_ref FOREIGN KEY (parent) REFERENCES cost_center (internal_id) ON DELETE cascade,
     CONSTRAINT fk_costcenter_parentunit FOREIGN KEY (parent_unit) REFERENCES cost_center (internal_id) ON DELETE CASCADE
 );
 
@@ -169,16 +181,24 @@ CREATE TABLE company
     internal_id UUID PRIMARY key DEFAULT gen_random_uuid(),
     tenant UUID NOT NULL,
     external_id VARCHAR(16) NOT NULL,
+    CONSTRAINT unique_company_external_id UNIQUE (tenant, external_id),
+    CONSTRAINT fk_company_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
+);
+
+CREATE TABLE  company_history
+(
+    parent UUID,
+    start_date DATE,
+    end_date DATE,
     name VARCHAR(64) NOT NULL,
     default_language_pack VARCHAR(10),
-    record_status smallint not null,
     default_timezone varChar(64),
-    CONSTRAINT unique_company_external_id UNIQUE (tenant, external_id),
-    CONSTRAINT fk_company_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE,
+    record_status smallint not null,
+    PRIMARY KEY (parent, start_date),
+    CONSTRAINT fk_company_ref FOREIGN KEY (parent) REFERENCES company (internal_id) ON DELETE cascade,
     CONSTRAINT fk_company_language_pack FOREIGN KEY (default_language_pack) REFERENCES language_pack (internal_id),
     CONSTRAINT fk_company_timezone FOREIGN KEY (default_timezone) REFERENCES timezone (tz_name)
 );
-
 
 CREATE TABLE country_to_company
 (
@@ -204,15 +224,15 @@ CREATE TABLE person
 
 CREATE TABLE person_history
 (
-    person UUID,
+    parent UUID,
     start_date DATE,
     end_date DATE,
     first_name VARCHAR(64),
     middle_name VARCHAR(64),
     last_name VARCHAR(64),
     display_name VARCHAR(128),
-    PRIMARY KEY (person, start_date),
-    CONSTRAINT fk_personhistory_person FOREIGN KEY (person) REFERENCES person (internal_id) ON DELETE CASCADE
+    PRIMARY KEY (parent, start_date),
+    CONSTRAINT fk_personhistory_parent FOREIGN KEY (parent) REFERENCES person (internal_id) ON DELETE CASCADE
 );
 
 
@@ -227,16 +247,20 @@ CREATE TABLE employment
     password varchar(256),
     login_method int default 0 check (login_method in(0,1,2)),--0 = Both, 1 = password, 2 = SSO
     primary_employment BOOLEAN NOT NULL,
+    timezone varchar(64),
+    hire_date DATE NOT NULL,
+    termination_date DATE,
     freeze_access_from DATE,
     CONSTRAINT unique_employment_employeeID UNIQUE (tenant, employee_id),
     CONSTRAINT unique_employment_username UNIQUE (tenant, username),
-    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id)
+    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id),
+    CONSTRAINT fk_employment_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name)
 
 );
 
 CREATE TABLE employment_history
 (
-    employment UUID,
+    parent UUID,
     start_date DATE not NUll,
     end_date DATE,
     event smallint NOT NULL,
@@ -246,13 +270,11 @@ CREATE TABLE employment_history
     hr UUID,
     orgunit UUID,
     cost_center UUID,
-    timezone varchar(64),
-    PRIMARY KEY (employment, start_date),
+    PRIMARY KEY (parent, start_date),
     CONSTRAINT fk_employmenthistory_orgunit FOREIGN KEY (orgunit) REFERENCES orgunit (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_cost_center FOREIGN KEY (cost_center) REFERENCES cost_center (internal_id) ON DELETE CASCADE,
-    CONSTRAINT fk_employmenthistory_id FOREIGN KEY (employment) REFERENCES employment (internal_id),
+    CONSTRAINT fk_employmenthistory_id FOREIGN KEY (parent) REFERENCES employment (internal_id),
     CONSTRAINT fk_employmenthistory_company FOREIGN KEY (company) REFERENCES company (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_manager FOREIGN KEY (manager) REFERENCES employment (internal_id),
-    CONSTRAINT fk_employmenthistory_hr FOREIGN KEY (hr) REFERENCES employment (internal_id),
-    CONSTRAINT fk_employmenthistory_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name)
+    CONSTRAINT fk_employmenthistory_hr FOREIGN KEY (hr) REFERENCES employment (internal_id)
 );
