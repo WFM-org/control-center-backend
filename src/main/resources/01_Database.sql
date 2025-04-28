@@ -120,7 +120,8 @@ CREATE TABLE field_override (
 	visible boolean NOT NULL,
     mandatory boolean NOT NULL,
     editable boolean NOT NULL,
-    PRIMARY KEY (tenant, allowed_field_overrides)
+    PRIMARY KEY (tenant, allowed_field_overrides),
+    CONSTRAINT fk_fieldoverride_allowedfieldoverride FOREIGN KEY (allowed_field_overrides) REFERENCES allowed_field_overrides (id)
 );
 
 CREATE TABLE orgunit

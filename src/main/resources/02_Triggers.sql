@@ -31,6 +31,18 @@ BEGIN
     INSERT INTO tenant_general_config (tenant, employee_id_sequence)
     VALUES (NEW.internal_id, seq_id);
 
+    -- Insert into field_override defaults
+    INSERT INTO field_override
+    VALUES
+    (NEW.internal_id, 100,false,false,false),
+    (NEW.internal_id, 200,true,true,true),
+    (NEW.internal_id, 201,true,false,true),
+    (NEW.internal_id, 202,true,true,true),
+    (NEW.internal_id, 203,true,true,true),
+    (NEW.internal_id, 300,true,false,true),
+    (NEW.internal_id, 402,true,false,true),
+    (NEW.internal_id, 403,true,false,true);
+
     RETURN NEW;
 END;
 ' LANGUAGE plpgsql;
