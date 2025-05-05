@@ -248,14 +248,12 @@ CREATE TABLE employment
     password varchar(256),
     login_method int default 0 check (login_method in(0,1,2)),--0 = Both, 1 = password, 2 = SSO
     primary_employment BOOLEAN NOT NULL,
-    timezone varchar(64),
     hire_date DATE NOT NULL,
     termination_date DATE,
     freeze_access_from DATE,
     CONSTRAINT unique_employment_employeeID UNIQUE (tenant, employee_id),
     CONSTRAINT unique_employment_username UNIQUE (tenant, username),
-    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id),
-    CONSTRAINT fk_employment_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name)
+    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id)
 
 );
 
@@ -267,6 +265,7 @@ CREATE TABLE employment_history
     event smallint NOT NULL,
     employee_status smallint not null,
     company UUID NOT NULL,
+    timezone varchar(64),
     manager UUID,
     hr UUID,
     orgunit UUID,
@@ -277,5 +276,6 @@ CREATE TABLE employment_history
     CONSTRAINT fk_employmenthistory_id FOREIGN KEY (parent) REFERENCES employment (internal_id),
     CONSTRAINT fk_employmenthistory_company FOREIGN KEY (company) REFERENCES company (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_manager FOREIGN KEY (manager) REFERENCES employment (internal_id),
-    CONSTRAINT fk_employmenthistory_hr FOREIGN KEY (hr) REFERENCES employment (internal_id)
+    CONSTRAINT fk_employmenthistory_hr FOREIGN KEY (hr) REFERENCES employment (internal_id),
+    CONSTRAINT fk_employmenthistory_timezone FOREIGN KEY (timezone) REFERENCES timezone (tz_name)
 );
