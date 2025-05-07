@@ -240,7 +240,7 @@ CREATE TABLE person_history
 CREATE TABLE employment
 (
     internal_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant UUID not null,
+    tenant UUID NOT null,
     person UUID NOT NULL,
     employee_id VARCHAR(16) NOT NULL,
     username VARCHAR(16) NOT NULL,
