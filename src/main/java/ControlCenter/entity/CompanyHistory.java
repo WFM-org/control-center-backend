@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Table(name = "company_history")
 public class CompanyHistory {
     @EmbeddedId
-    private CompanyHistoryId id;
+    private CompanyHistoryId id = null;
 
     @Column(name = "end_date")
     private LocalDate endDate;
@@ -23,7 +23,7 @@ public class CompanyHistory {
     @Column(name = "name", nullable = false, length = 64)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "default_language_pack", nullable = false)
     private LanguagePack languagePackDefault;
 
@@ -33,7 +33,7 @@ public class CompanyHistory {
     @Column(name = "record_status", length = 64)
     private Short recordStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "parent", referencedColumnName = "internal_id", insertable = false, updatable = false)
     private Company company;
 }

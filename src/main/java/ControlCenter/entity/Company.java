@@ -7,6 +7,7 @@ import lombok.Setter;
 import ControlCenter.annotations.ImmutableField;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,5 +30,5 @@ public class Company {
     private String externalId;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    private List<CompanyHistory> companyHistories;
+    private List<CompanyHistory> companyHistories = new ArrayList<>();
 }

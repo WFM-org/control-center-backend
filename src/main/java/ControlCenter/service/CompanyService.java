@@ -1,9 +1,9 @@
 package ControlCenter.service;
 
+import ControlCenter.dto.CompanyDTO;
 import ControlCenter.entity.Company;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ControlCenter.projection.CompanyProjection;
 import ControlCenter.repository.CompanyRepository;
 
 import java.time.LocalDate;
@@ -23,12 +23,16 @@ public class CompanyService {
         this.languagePackService = languagePackService;
     }
 
-//    public List<CompanyProjection> getAllCompanies() {
-//        return companyRepository.findAllCompanies();
-//    }
+    public Optional<CompanyDTO> getCompanyByInternalId(UUID internalId, LocalDate effectiveDate) {
+        Optional<Company> company = companyRepository.findCompanyById(internalId);
+        return company.map(value -> CompanyDTO.fromEntity(value, effectiveDate));
+    }
 
-    public Optional<CompanyProjection> getCompanyByExternalId(UUID internalId, LocalDate effectiveDate) {
-        return companyRepository.findCompanyByInternalId(internalId, effectiveDate);
+    public List<CompanyDTO> getCompaniesByTenant(UUID internalId, LocalDate effectiveDate) {
+        return companyRepository.findCompaniesByTenantId(internalId)
+                .stream()
+                .map(value -> CompanyDTO.fromEntity(value, effectiveDate))
+                .toList();
     }
 
 //    public List<CompanyProjection> getCompanyByName(String companyName) {

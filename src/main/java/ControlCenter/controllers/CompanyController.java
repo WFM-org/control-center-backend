@@ -1,22 +1,16 @@
 package ControlCenter.controllers;
 
-import jakarta.validation.Valid;
+import ControlCenter.dto.CompanyDTO;
+import ControlCenter.projection.TenantProjection;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ControlCenter.entity.Company;
-import ControlCenter.exception.CompanyNotFoundException;
-import ControlCenter.exception.ImmutableUpdateException;
-import ControlCenter.exception.TenantNotFoundException;
-import ControlCenter.projection.CompanyProjection;
-import ControlCenter.projection.TenantProjection;
 import ControlCenter.repository.TenantRepository;
 import ControlCenter.service.CompanyService;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -48,18 +42,35 @@ public class CompanyController {
 //    }
 
     @GetMapping("/companyById")
-    public ResponseEntity<CompanyProjection> getCompanyById(@RequestParam UUID internalId, @RequestParam LocalDate effectiveDate) {
+    public ResponseEntity<CompanyDTO> getCompanyById(@RequestParam UUID internalId, @RequestParam LocalDate effectiveDate) {
         try {
-            Optional<CompanyProjection> companiesById = companyService.getCompanyByExternalId(internalId, effectiveDate);
-            if (companiesById.isEmpty()) {
+            Optional<CompanyDTO> company = companyService.getCompanyByInternalId(internalId, effectiveDate);
+            if (company.isEmpty()) {
                 log.warn("No companies found by given id");
                 return ResponseEntity.noContent().build();
             }
-            return ResponseEntity.ok(companiesById.get());
+            return ResponseEntity.ok(company.get());
         } catch (Exception e) {
             log.error("Error fetching companies by given id", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/companiesByTenant")
+    public ResponseEntity<List<CompanyDTO>> getCompaniesByTenant(@RequestParam LocalDate effectiveDate) {
+        TenantProjection tenant = getTenantIdFromJWTToken();
+        try {
+            List<CompanyDTO> companies = companyService.getCompaniesByTenant(tenant.getId(), effectiveDate);
+            return ResponseEntity.ok(companies);
+        } catch (Exception e) {
+            log.error("Error fetching companies by given tenant id", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // TODO: Real implementation
+    private TenantProjection getTenantIdFromJWTToken() {
+        return tenantRepository.findAllTenants().getFirst();
     }
 
 //    @GetMapping("/companyByName")
