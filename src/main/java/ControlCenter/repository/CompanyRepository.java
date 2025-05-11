@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ControlCenter.entity.Company;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,6 +29,11 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
             "JOIN FETCH c.companyHistories ch " +
             "WHERE c.tenant = :tenantId")
     Optional<Company> findCompaniesByTenantId(@Param("tenantId") UUID tenantId);
+
+    @Query("SELECT c FROM Company c " +
+            "JOIN FETCH c.companyHistories ch " +
+            "WHERE ch.name = :name")
+    List<Company> findCompaniesByName(@Param("name") String name);
 
 //    @Query("SELECT c FROM Company c JOIN c.company_history ch WHERE LOWER(ch.name) = LOWER(:companyName)")
 //    List<CompanyProjection> findCompaniesByCompanyName(String companyName);

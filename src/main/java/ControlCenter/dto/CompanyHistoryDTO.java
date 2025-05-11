@@ -23,6 +23,14 @@ public class CompanyHistoryDTO {
     private String timezone;
     private Short recordStatus;
 
+    public CompanyHistoryDTO(UUID companyId, LocalDate startDate, String name, LanguagePack languagePack, String timezone) {
+        this.companyId = companyId;
+        this.startDate = startDate;
+        this.name = name;
+        this.languagePackDefault = languagePack;
+        this.timezone = timezone;
+    }
+
     public static CompanyHistoryDTO fromEntity(CompanyHistory companyHistory) {
         return new CompanyHistoryDTO(companyHistory.getCompany().getInternalId(),
                 companyHistory.getEndDate(),

@@ -1,7 +1,9 @@
 package ControlCenter.entity;
 
+import ControlCenter.dto.CompanyDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import ControlCenter.annotations.ImmutableField;
@@ -31,4 +33,11 @@ public class Company {
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private List<CompanyHistory> companyHistories = new ArrayList<>();
+
+    public static Company fromDTO(CompanyDTO dto) {
+        Company company = new Company();
+        company.setExternalId(dto.getExternalId());
+        company.setTenant(dto.getTenant());
+        return new Company();
+    }
 }

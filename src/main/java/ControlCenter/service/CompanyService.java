@@ -1,10 +1,16 @@
 package ControlCenter.service;
 
 import ControlCenter.dto.CompanyDTO;
+import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.Company;
+import ControlCenter.entity.CompanyHistory;
+import ControlCenter.entity.LanguagePack;
+import ControlCenter.exception.CompanyNotFoundException;
+import ControlCenter.exception.TenantNotFoundException;
+import ControlCenter.repository.CompanyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ControlCenter.repository.CompanyRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,11 +41,42 @@ public class CompanyService {
                 .toList();
     }
 
-//    public List<CompanyProjection> getCompanyByName(String companyName) {
-//        return companyRepository.findCompaniesByCompanyName(companyName);
-//    }
+    public void deleteCompany(UUID internalId) throws CompanyNotFoundException {
+        Optional<Company> company = companyRepository.findCompanyById(internalId);
+        if(company.isPresent()) {
+            companyRepository.delete(company.get());
+        } else {
+            log.error("Company with ID {} could not be deleted because " +
+                    "it was not found in the database.", internalId);
+            throw new CompanyNotFoundException();
+        }
+    }
 
-//    @Transactional
+    @Transactional
+    public CompanyDTO createCompany(CompanyDTO company) throws TenantNotFoundException {
+        // Company insert
+        Company companyEntity = Company.fromDTO(company);
+        Company newCompanyEntity = companyRepository.save(companyEntity);
+
+        // Historical record insert
+        LanguagePack defaultLP = languagePackService.getDefaultLanguagePackByTenantId(newCompanyEntity.getTenant());
+        CompanyHistoryDTO companyHistoryDTO = new CompanyHistoryDTO(newCompanyEntity.getInternalId(),
+                LocalDate.now(), company.getName(), defaultLP, company.getTimezone());
+        CompanyHistory companyHistoryEntity = CompanyHistory.fromDTO(companyHistoryDTO);
+        newCompanyEntity.getCompanyHistories().add(companyHistoryEntity);
+        Company newHistoricalRecord = companyRepository.save(newCompanyEntity);
+
+        log.info("Successfully created company with ID: {}", newHistoricalRecord.getInternalId());
+        return CompanyDTO.fromEntity(newHistoricalRecord, LocalDate.now());
+    }
+
+    public List<CompanyDTO> getCompaniesByName(String companyName, LocalDate effectiveDate) {
+        return companyRepository.findCompaniesByName(companyName).stream()
+                .map(value -> CompanyDTO.fromEntity(value, effectiveDate))
+                .toList();
+    }
+
+    //    @Transactional
 //    public Company createCompany(String externalId, String companyName, UUID tenantId) throws TenantNotFoundException {
 //        validateNotBlank(externalId, "Company external Id");
 //        validateNotBlank(companyName, "Company name");
@@ -92,9 +129,4 @@ public class CompanyService {
 //        }
 //    }
 //
-//    private void validateNotBlank(String value, String fieldName) {
-//        if (value == null || value.isBlank()) {
-//            throw new IllegalArgumentException(fieldName + " can not be empty");
-//        }
-//    }
 }

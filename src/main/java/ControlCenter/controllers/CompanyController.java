@@ -5,6 +5,7 @@ import ControlCenter.projection.TenantProjection;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class CompanyController {
     public ResponseEntity<List<CompanyDTO>> getCompaniesByTenant(@RequestParam LocalDate effectiveDate) {
         TenantProjection tenant = getTenantIdFromJWTToken();
         try {
-            List<CompanyDTO> companies = companyService.getCompaniesByTenant(tenant.getId(), effectiveDate);
+            List<CompanyDTO> companies = companyService.getCompaniesByTenant(tenant.getInternalId(), effectiveDate);
             return ResponseEntity.ok(companies);
         } catch (Exception e) {
             log.error("Error fetching companies by given tenant id", e);

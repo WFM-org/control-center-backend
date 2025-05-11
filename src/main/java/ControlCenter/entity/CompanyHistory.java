@@ -1,5 +1,6 @@
 package ControlCenter.entity;
 
+import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.compositeKey.CompanyHistoryId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "company_history")
 public class CompanyHistory {
     @EmbeddedId
-    private CompanyHistoryId id = null;
+    private CompanyHistoryId id;
 
     @Column(name = "end_date")
     private LocalDate endDate;
@@ -36,4 +37,14 @@ public class CompanyHistory {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "parent", referencedColumnName = "internal_id", insertable = false, updatable = false)
     private Company company;
+
+    public static CompanyHistory fromDTO(CompanyHistoryDTO dto) {
+        CompanyHistory companyHistory = new CompanyHistory();
+        companyHistory.setId(new CompanyHistoryId(dto.getCompanyId(), dto.getStartDate()));
+        companyHistory.setName(dto.getName());
+        companyHistory.setLanguagePackDefault(dto.getLanguagePackDefault());
+        companyHistory.setTimezone(dto.getTimezone());
+        companyHistory.setRecordStatus(dto.getRecordStatus());
+        return companyHistory;
+    }
 }

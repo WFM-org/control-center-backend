@@ -40,7 +40,7 @@ public class LanguagePackController {
     public ResponseEntity<List<LanguagePackEnabledProjection>> getLanguagePacksByTenant() {
         TenantProjection tenant = getTenantIdFromJWTToken();
         try {
-            List<LanguagePackEnabledProjection> languagePacks = languagePackService.getLanguagePacksByTenantId(tenant.getId());
+            List<LanguagePackEnabledProjection> languagePacks = languagePackService.getLanguagePacksByTenantId(tenant.getInternalId());
             return ResponseEntity.ok(languagePacks);
         } catch (Exception e) {
             log.error("Could not get language packs for tenant by given id", e);
@@ -52,8 +52,8 @@ public class LanguagePackController {
     public ResponseEntity<HttpStatus> assignLanguagePackToTenant(@RequestParam("languagePackId") String languagePackId) {
         TenantProjection tenant = getTenantIdFromJWTToken();
         try {
-            languagePackService.assignLanguagePack(tenant.getId(), languagePackId);
-            log.info("Language Pack with ID {} is assigned to Tenant with ID {}", languagePackId, tenant.getId());
+            languagePackService.assignLanguagePack(tenant.getInternalId(), languagePackId);
+            log.info("Language Pack with ID {} is assigned to Tenant with ID {}", languagePackId, tenant.getInternalId());
             return ResponseEntity.ok(HttpStatus.ACCEPTED);
         } catch (LanguagePackNotFoundException e) {
             log.error("Language pack {} is already assigned to Tenant {}", e.getLanguagePackId(), e.getTenantId());
@@ -74,8 +74,8 @@ public class LanguagePackController {
     public ResponseEntity<HttpStatus> unassignLanguagePackToTenant(@RequestParam("languagePackId") String languagePackId) {
         TenantProjection tenant = getTenantIdFromJWTToken();
         try {
-            languagePackService.unassignLanguagePack(languagePackId, tenant.getId());
-            log.warn("Language Pack with ID {} is removed from Tenant with ID {}", languagePackId, tenant.getId());
+            languagePackService.unassignLanguagePack(languagePackId, tenant.getInternalId());
+            log.warn("Language Pack with ID {} is removed from Tenant with ID {}", languagePackId, tenant.getInternalId());
             return ResponseEntity.ok(HttpStatus.ACCEPTED);
         } catch (TenantNotFoundException e) {
             log.error("Tenant with ID {} could not be found. Language Pack with ID {} was not removed.",
