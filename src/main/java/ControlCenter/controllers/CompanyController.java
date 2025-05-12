@@ -1,7 +1,13 @@
 package ControlCenter.controllers;
 
 import ControlCenter.dto.CompanyDTO;
+import ControlCenter.dto.CompanyHistoryDTO;
+import ControlCenter.exception.CompanyControlUnknownError;
+import ControlCenter.exception.CompanyNotFoundException;
+import ControlCenter.exception.ImmutableUpdateException;
+import ControlCenter.exception.TenantNotFoundException;
 import ControlCenter.projection.TenantProjection;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +32,6 @@ public class CompanyController {
 
     private final CompanyService companyService;
     private final TenantRepository tenantRepository;
-
-//    @GetMapping("/getAllCompanies")
-//    public ResponseEntity<List<CompanyProjection>> getAllCompanies() {
-//        try {
-//            List<CompanyProjection> companies = companyService.getAllCompanies();
-//            if (companies.isEmpty()) {
-//                log.warn("No companies found");
-//                return ResponseEntity.noContent().build();
-//            }
-//            return ResponseEntity.ok(companies);
-//        } catch (Exception e) {
-//            log.error("Error fetching companies", e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
 
     @GetMapping("/companyById")
     public ResponseEntity<CompanyDTO> getCompanyById(@RequestParam UUID internalId, @RequestParam LocalDate effectiveDate) {
@@ -69,6 +60,56 @@ public class CompanyController {
         }
     }
 
+    @PostMapping("/createCompany")
+    public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CompanyDTO request) {
+        try {
+            return ResponseEntity.ok(companyService.createCompany(request));
+        } catch (TenantNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (CompanyControlUnknownError e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/updateCompany/{companyId}")
+    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable UUID internalId, @RequestBody CompanyDTO request) {
+        try {
+            CompanyDTO updated = companyService.updateCompany(internalId, request);
+            log.info("Company with id {} is successfully updated", internalId);
+            return ResponseEntity.ok(updated);
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImmutableUpdateException e) {
+            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping("/createCompanyHistoricalRecord/{companyId}")
+    public ResponseEntity<CompanyHistoryDTO> updateCompany(@PathVariable UUID internalId, @RequestBody CompanyHistoryDTO request) {
+        try {
+            CompanyHistoryDTO updated = companyService.createCompanyHistoricalRecord(internalId, request);
+            log.info("Company Historical Record for Company with id {} is successfully inserted", updated.getCompanyId());
+            return ResponseEntity.ok(updated);
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImmutableUpdateException e) {
+            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @DeleteMapping("/deleteCompany/{companyId}")
+    public ResponseEntity<CompanyDTO> deleteCompany(@PathVariable UUID internalId) {
+        try {
+            companyService.deleteCompany(internalId);
+            log.info("Company with id {} is deleted successfully", internalId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     // TODO: Real implementation
     private TenantProjection getTenantIdFromJWTToken() {
         return tenantRepository.findAllTenants().getFirst();
@@ -89,40 +130,5 @@ public class CompanyController {
 //        }
 //    }
 
-//    @PostMapping("/createCompany")
-//    public ResponseEntity<Company> createCompany(@Valid @RequestBody Company request) {
-//        try {
-//            TenantProjection first = tenantRepository.findAllTenants().getFirst();
-//            Company company = companyService.createCompany(request.getExternalId(),
-//                    request.getName(), first.getId());
-//            return ResponseEntity.ok(company);
-//        } catch (TenantNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
 
-//    @DeleteMapping("/deleteCompany/{companyId}")
-//    public ResponseEntity<CompanyProjection> deleteCompany(@PathVariable UUID companyId) {
-//        try {
-//            CompanyProjection deleted = companyService.deleteCompanyById(companyId);
-//            log.info("Company with id {} is deleted successfully", companyId);
-//            return ResponseEntity.ok(deleted);
-//        } catch (CompanyNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
-
-//    @PostMapping("/updateCompany/{companyId}")
-//    public ResponseEntity<CompanyProjection> updateCompany(@PathVariable UUID companyId, @RequestBody Company request) {
-//        try {
-//            CompanyProjection updated = companyService.updateCompany(request, companyId);
-//            log.info("Company with id {} is updated successfully", companyId);
-//            return ResponseEntity.ok(updated);
-//        } catch (CompanyNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        } catch (ImmutableUpdateException e) {
-//            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
-//    }
 }

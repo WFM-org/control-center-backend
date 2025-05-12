@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -42,7 +43,8 @@ public class CompanyHistory {
         CompanyHistory companyHistory = new CompanyHistory();
         companyHistory.setId(new CompanyHistoryId(dto.getCompanyId(), dto.getStartDate()));
         companyHistory.setName(dto.getName());
-        companyHistory.setLanguagePackDefault(dto.getLanguagePackDefault());
+        companyHistory.setLanguagePackDefault(
+                new LanguagePack(dto.getLanguagePackDefault().getInternalId(), dto.getLanguagePackDefault().getLanguageName()));
         companyHistory.setTimezone(dto.getTimezone());
         companyHistory.setRecordStatus(dto.getRecordStatus());
         return companyHistory;

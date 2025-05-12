@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "language_pack")
+@AllArgsConstructor
+@NoArgsConstructor
 public class LanguagePack {
     @Id
     @Column(name = "internal_id", nullable = false, length = 10)

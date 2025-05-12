@@ -20,6 +20,7 @@ import java.util.UUID;
 public class Company {
     @Id
     @ColumnDefault("gen_random_uuid()")
+    @GeneratedValue
     @Column(name = "internal_id", nullable = false)
     private UUID internalId;
 
@@ -31,13 +32,13 @@ public class Company {
     @Column(name = "external_id", nullable = false, length = 16)
     private String externalId;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CompanyHistory> companyHistories = new ArrayList<>();
 
     public static Company fromDTO(CompanyDTO dto) {
         Company company = new Company();
         company.setExternalId(dto.getExternalId());
         company.setTenant(dto.getTenant());
-        return new Company();
+        return company;
     }
 }

@@ -14,8 +14,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class CompanyHistoryId {
-    @Column(name = "parent", nullable = false)
+    @Column(name = "parent", nullable = false, insertable=false, updatable=false)
     private UUID parent;
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_date", nullable = false, insertable=false, updatable=false)
     private LocalDate startDate;
 }
