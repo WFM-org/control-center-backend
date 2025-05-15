@@ -90,12 +90,6 @@ public class CompanyService {
         return CompanyDTO.fromEntity(inserted, company.getStartDate());
     }
 
-    public List<CompanyDTO> getCompaniesByName(String companyName, LocalDate effectiveDate) {
-        return companyRepository.findCompaniesByName(companyName).stream()
-                .map(value -> CompanyDTO.fromEntity(value, effectiveDate))
-                .toList();
-    }
-
     @Transactional
     public CompanyDTO updateCompany(UUID internalId, LocalDate effectiveDate, CompanyDTO update) throws CompanyNotFoundException, ImmutableUpdateException, CompanyHistoryNotFoundException {
         // Company update
@@ -138,13 +132,13 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyHistoryDTO createCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO insert) throws CompanyNotFoundException {
+    public CompanyHistoryDTO createCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO record) throws CompanyNotFoundException {
         Company company = companyRepository.findCompanyById(internalId)
                 .orElseThrow(CompanyNotFoundException::new);
 
         // Historical record insert
         Optional<CompanyHistory> exist = company.getCompanyHistories().stream()
-                .filter(f -> f.getId().getStartDate().equals(insert.getStartDate()))
+                .filter(f -> f.getId().getStartDate().equals(record.getStartDate()))
                 .findFirst();
         if(exist.isPresent()) {
             companyHistoryRepository.deleteByEmbeddedId(exist.get().getId());
@@ -153,7 +147,7 @@ public class CompanyService {
         }
 
         CompanyHistoryDTO companyHistoryDTO = new CompanyHistoryDTO(company.getInternalId(),
-                insert.getStartDate(), insert.getName(), insert.getLanguagePackDefault(), insert.getTimezone());
+                record.getStartDate(), record.getName(), record.getLanguagePackDefault(), record.getTimezone());
 
         CompanyHistory newCompanyHistory = CompanyHistory.fromDTO(companyHistoryDTO);
         company.getCompanyHistories().add(newCompanyHistory);
@@ -164,13 +158,13 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyHistoryDTO deleteCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO toDelete) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
+    public CompanyHistoryDTO deleteCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
         Company company = companyRepository.findCompanyById(internalId)
                 .orElseThrow(CompanyNotFoundException::new);
 
         // Historical record insert
         CompanyHistory exist = company.getCompanyHistories().stream()
-                .filter(f -> f.getId().getStartDate().equals(toDelete.getStartDate()))
+                .filter(f -> f.getId().getStartDate().equals(record.getStartDate()))
                 .findFirst().orElseThrow(CompanyHistoryNotFoundException::new);
 
         if(company.getCompanyHistories().size() == 1) {

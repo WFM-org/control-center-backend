@@ -88,13 +88,29 @@ public class CompanyController {
 
     @PostMapping("/createCompanyHistoricalRecord/{companyId}")
     public ResponseEntity<CompanyHistoryDTO> createCompanyHistoricalRecord(@PathVariable UUID companyId,
-                                                                           @RequestBody CompanyHistoryDTO request) {
+                                                                           @RequestBody CompanyHistoryDTO record) {
         try {
-            CompanyHistoryDTO inserted = companyService.createCompanyHistoricalRecord(companyId, request);
+            CompanyHistoryDTO inserted = companyService.createCompanyHistoricalRecord(companyId, record);
             log.info("Company Historical Record for Company with id {} is successfully inserted", inserted.getCompanyId());
             return ResponseEntity.ok(inserted);
         } catch (CompanyNotFoundException e) {
             log.error("Failed to create historical record: Company with id: {} could not be found", companyId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @DeleteMapping("/deleteCompanyHistoricalRecord/{companyId}")
+    public ResponseEntity<CompanyDTO> deleteCompanyHistory(@PathVariable UUID companyId,
+                                                    @RequestBody CompanyHistoryDTO record) {
+        try {
+            companyService.deleteCompanyHistoricalRecord(companyId, record);
+            log.info("Company with id {} is deleted successfully", companyId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (CompanyHistoryNotFoundException e) {
+            log.error("Effective historical record for Company with id: {} and start date: {} could not be found",
+                    companyId, record.getStartDate());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -106,22 +122,6 @@ public class CompanyController {
             log.info("Company with id {} is deleted successfully", companyId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (CompanyNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @DeleteMapping("/deleteCompanyHistory/{companyId}")
-    public ResponseEntity<CompanyDTO> deleteCompanyHistory(@PathVariable UUID companyId,
-                                                    @RequestBody CompanyHistoryDTO toDelete) {
-        try {
-            companyService.deleteCompanyHistoricalRecord(companyId, toDelete);
-            log.info("Company with id {} is deleted successfully", companyId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (CompanyNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (CompanyHistoryNotFoundException e) {
-            log.error("Effective historical record for Company with id: {} and start date: {} could not be found",
-                    companyId, toDelete.getStartDate());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
