@@ -2,21 +2,17 @@ package ControlCenter.controllers;
 
 import ControlCenter.dto.CompanyDTO;
 import ControlCenter.dto.CompanyHistoryDTO;
-import ControlCenter.exception.CompanyControlUnknownError;
-import ControlCenter.exception.CompanyNotFoundException;
-import ControlCenter.exception.ImmutableUpdateException;
-import ControlCenter.exception.TenantNotFoundException;
+import ControlCenter.exception.*;
 import ControlCenter.projection.TenantProjection;
+import ControlCenter.repository.TenantRepository;
+import ControlCenter.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ControlCenter.repository.TenantRepository;
-import ControlCenter.service.CompanyService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,9 +23,7 @@ import java.util.UUID;
 @RequestMapping("/cc/company")
 @RequiredArgsConstructor
 public class CompanyController {
-
     private static final Logger log = LoggerFactory.getLogger(CompanyController.class);
-
     private final CompanyService companyService;
     private final TenantRepository tenantRepository;
 
@@ -72,13 +66,20 @@ public class CompanyController {
     }
 
     @PostMapping("/updateCompany/{companyId}")
-    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable UUID internalId, @RequestBody CompanyDTO request) {
+    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable UUID companyId,
+                                                    @RequestParam LocalDate effectiveDate,
+                                                    @RequestBody CompanyDTO request) {
         try {
-            CompanyDTO updated = companyService.updateCompany(internalId, request);
-            log.info("Company with id {} is successfully updated", internalId);
+            CompanyDTO updated = companyService.updateCompany(companyId, effectiveDate, request);
+            log.info("Company with id {} is successfully updated", companyId);
             return ResponseEntity.ok(updated);
         } catch (CompanyNotFoundException e) {
+            log.error("Failed to update: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (CompanyHistoryNotFoundException e) {
+            log.error("Effective historical record for Company with id: {} and effective date: {} could not be found",
+                    companyId, effectiveDate);
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (ImmutableUpdateException e) {
             log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -86,26 +87,41 @@ public class CompanyController {
     }
 
     @PostMapping("/createCompanyHistoricalRecord/{companyId}")
-    public ResponseEntity<CompanyHistoryDTO> updateCompany(@PathVariable UUID internalId, @RequestBody CompanyHistoryDTO request) {
+    public ResponseEntity<CompanyHistoryDTO> createCompanyHistoricalRecord(@PathVariable UUID companyId,
+                                                                           @RequestBody CompanyHistoryDTO request) {
         try {
-            CompanyHistoryDTO updated = companyService.createCompanyHistoricalRecord(internalId, request);
-            log.info("Company Historical Record for Company with id {} is successfully inserted", updated.getCompanyId());
-            return ResponseEntity.ok(updated);
+            CompanyHistoryDTO inserted = companyService.createCompanyHistoricalRecord(companyId, request);
+            log.info("Company Historical Record for Company with id {} is successfully inserted", inserted.getCompanyId());
+            return ResponseEntity.ok(inserted);
         } catch (CompanyNotFoundException e) {
+            log.error("Failed to create historical record: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (ImmutableUpdateException e) {
-            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @DeleteMapping("/deleteCompany/{companyId}")
-    public ResponseEntity<CompanyDTO> deleteCompany(@PathVariable UUID internalId) {
+    public ResponseEntity<CompanyDTO> deleteCompany(@PathVariable UUID companyId) {
         try {
-            companyService.deleteCompany(internalId);
-            log.info("Company with id {} is deleted successfully", internalId);
+            companyService.deleteCompany(companyId);
+            log.info("Company with id {} is deleted successfully", companyId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @DeleteMapping("/deleteCompanyHistory/{companyId}")
+    public ResponseEntity<CompanyDTO> deleteCompanyHistory(@PathVariable UUID companyId,
+                                                    @RequestBody CompanyHistoryDTO toDelete) {
+        try {
+            companyService.deleteCompanyHistoricalRecord(companyId, toDelete);
+            log.info("Company with id {} is deleted successfully", companyId);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (CompanyNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (CompanyHistoryNotFoundException e) {
+            log.error("Effective historical record for Company with id: {} and start date: {} could not be found",
+                    companyId, toDelete.getStartDate());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -114,21 +130,4 @@ public class CompanyController {
     private TenantProjection getTenantIdFromJWTToken() {
         return tenantRepository.findAllTenants().getFirst();
     }
-
-//    @GetMapping("/companyByName")
-//    public ResponseEntity<List<CompanyProjection>> getCompanyByName(@RequestParam String companyName) {
-//        try {
-//            List<CompanyProjection> companiesByName = companyService.getCompanyByName(companyName);
-//            if (companiesByName.isEmpty()) {
-//                log.warn("No companies found by given name");
-//                return ResponseEntity.noContent().build();
-//            }
-//            return ResponseEntity.ok(companiesByName);
-//        } catch (Exception e) {
-//            log.error("Error fetching companies by given name", e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
-
 }

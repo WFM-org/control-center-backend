@@ -2,7 +2,6 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.Company;
-import ControlCenter.projection.LanguagePackProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +25,7 @@ public class CompanyDTO {
     @Historical
     private String name;
     @Historical
-    private LanguagePackProjection languagePackDefault;
+    private LanguagePackDTO languagePackDefault;
     @Historical
     private String timezone;
     @Historical
@@ -36,12 +35,12 @@ public class CompanyDTO {
     private List<CompanyHistoryDTO> companyHistoryList;
 
     public static CompanyDTO fromEntity(Company company, LocalDate effectiveDate) {
-        List<CompanyHistoryDTO> historicalData = company.getCompanyHistories().stream()
+        List<CompanyHistoryDTO> historyList = company.getCompanyHistories().stream()
                 .map(CompanyHistoryDTO::fromEntity).toList();
 
         Optional<CompanyHistoryDTO> effectiveDated = Optional.empty();
         if(effectiveDate != null) {
-            effectiveDated = historicalData.stream()
+            effectiveDated = historyList.stream()
                     .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
                     .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
                     .filter(f -> effectiveDate.isBefore(f.getEndDate()))
@@ -56,6 +55,6 @@ public class CompanyDTO {
                 effectiveDated.map(CompanyHistoryDTO::getTimezone).orElse(null),
                 effectiveDated.map(CompanyHistoryDTO::getStartDate).orElse(null),
                 effectiveDated.map(CompanyHistoryDTO::getRecordStatus).orElse(null),
-                historicalData);
+                historyList);
     }
 }

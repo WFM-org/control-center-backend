@@ -43,8 +43,7 @@ public class CompanyHistory {
         CompanyHistory companyHistory = new CompanyHistory();
         companyHistory.setId(new CompanyHistoryId(dto.getCompanyId(), dto.getStartDate()));
         companyHistory.setName(dto.getName());
-        companyHistory.setLanguagePackDefault(
-                new LanguagePack(dto.getLanguagePackDefault().getInternalId(), dto.getLanguagePackDefault().getLanguageName()));
+        companyHistory.setLanguagePackDefault(LanguagePack.fromDTO(dto.getLanguagePackDefault()));
         companyHistory.setTimezone(dto.getTimezone());
         companyHistory.setRecordStatus(dto.getRecordStatus());
         return companyHistory;

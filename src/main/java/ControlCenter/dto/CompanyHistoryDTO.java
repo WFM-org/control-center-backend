@@ -2,7 +2,6 @@ package ControlCenter.dto;
 
 import ControlCenter.entity.CompanyHistory;
 import ControlCenter.enums.RecordStatus;
-import ControlCenter.projection.LanguagePackProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,11 +19,11 @@ public class CompanyHistoryDTO {
     private LocalDate endDate;
     private LocalDate startDate;
     private String name;
-    private LanguagePackProjection languagePackDefault;
+    private LanguagePackDTO languagePackDefault;
     private String timezone;
     private Short recordStatus;
 
-    public CompanyHistoryDTO(UUID companyId, LocalDate startDate, String name, LanguagePackProjection languagePack, String timezone) {
+    public CompanyHistoryDTO(UUID companyId, LocalDate startDate, String name, LanguagePackDTO languagePack, String timezone) {
         this.companyId = companyId;
         this.startDate = startDate;
         this.name = name;
@@ -38,7 +37,10 @@ public class CompanyHistoryDTO {
                 companyHistory.getEndDate(),
                 companyHistory.getId().getStartDate(),
                 companyHistory.getName(),
-                LanguagePackProjection.mapToLanguagePackProjection(companyHistory.getLanguagePackDefault()),
+                new LanguagePackDTO(
+                        companyHistory.getLanguagePackDefault().getInternalId(),
+                        companyHistory.getLanguagePackDefault().getLanguageName()
+                ),
                 companyHistory.getTimezone(),
                 companyHistory.getRecordStatus());
     }

@@ -22,6 +22,7 @@ public class Company {
     @ColumnDefault("gen_random_uuid()")
     @GeneratedValue
     @Column(name = "internal_id", nullable = false)
+    @ImmutableField
     private UUID internalId;
 
     @Column(name = "tenant", nullable = false)
@@ -33,7 +34,7 @@ public class Company {
     private String externalId;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<CompanyHistory> companyHistories = new ArrayList<>();
+    private List<CompanyHistory> companyHistories;
 
     public static Company fromDTO(CompanyDTO dto) {
         Company company = new Company();

@@ -2,23 +2,23 @@ package ControlCenter.service;
 
 import ControlCenter.dto.CompanyDTO;
 import ControlCenter.dto.CompanyHistoryDTO;
+import ControlCenter.dto.LanguagePackDTO;
 import ControlCenter.entity.Company;
 import ControlCenter.entity.CompanyHistory;
 import ControlCenter.entity.LanguagePack;
-import ControlCenter.exception.CompanyControlUnknownError;
-import ControlCenter.exception.CompanyNotFoundException;
-import ControlCenter.exception.TenantNotFoundException;
-import ControlCenter.projection.LanguagePackProjection;
+import ControlCenter.exception.*;
+import ControlCenter.fieldValidators.ImmutableFieldValidation;
+import ControlCenter.repository.CompanyHistoryRepository;
 import ControlCenter.repository.CompanyRepository;
+import ControlCenter.service.utils.ServiceUtils;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,14 +28,18 @@ import java.util.UUID;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
+    private final CompanyHistoryRepository companyHistoryRepository;
     private final LanguagePackService languagePackService;
+    private final EntityManager entityManager;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public CompanyService(CompanyRepository companyRepository, LanguagePackService languagePackService) {
+    public CompanyService(CompanyRepository companyRepository,
+                          CompanyHistoryRepository companyHistoryRepository,
+                          LanguagePackService languagePackService,
+                          EntityManager entityManager) {
         this.companyRepository = companyRepository;
+        this.companyHistoryRepository = companyHistoryRepository;
         this.languagePackService = languagePackService;
+        this.entityManager = entityManager;
     }
 
     public Optional<CompanyDTO> getCompanyByInternalId(UUID internalId, LocalDate effectiveDate) {
@@ -70,11 +74,12 @@ public class CompanyService {
 
         // Historical record insert
         LanguagePack languagePack = languagePackService.getDefaultLanguagePackByTenantId(newCompanyEntity.getTenant());
-        LanguagePackProjection languagePackProjection = LanguagePackProjection.mapToLanguagePackProjection(languagePack);
+        LanguagePackDTO languagePackDTO = LanguagePackDTO.fromEntity(languagePack);
         CompanyHistoryDTO companyHistoryDTO = new CompanyHistoryDTO(newCompanyEntity.getInternalId(),
-                company.getStartDate(), company.getName(), languagePackProjection, company.getTimezone());
+                company.getStartDate(), company.getName(), languagePackDTO, company.getTimezone());
         CompanyHistory companyHistoryEntity = CompanyHistory.fromDTO(companyHistoryDTO);
-        newCompanyEntity.getCompanyHistories().add(companyHistoryEntity);
+        List<CompanyHistory> mutableCompanyHistoryList = new ArrayList<>(List.of(companyHistoryEntity));
+        newCompanyEntity.setCompanyHistories(mutableCompanyHistoryList);
         Company inserted = companyRepository.save(newCompanyEntity);
 
         entityManager.flush();
@@ -91,78 +96,91 @@ public class CompanyService {
                 .toList();
     }
 
-    public CompanyDTO updateCompany(UUID internalId, CompanyDTO update) throws CompanyNotFoundException {
+    @Transactional
+    public CompanyDTO updateCompany(UUID internalId, LocalDate effectiveDate, CompanyDTO update) throws CompanyNotFoundException, ImmutableUpdateException, CompanyHistoryNotFoundException {
         // Company update
-        Optional<Company> company = companyRepository.findCompanyById(internalId);
-        if(company.isEmpty()) {
-            throw new CompanyNotFoundException();
+        Company toUpdate = companyRepository.findCompanyById(internalId)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        Company updateFrom = Company.fromDTO(update);
+        ImmutableFieldValidation.validate(updateFrom, toUpdate);
+        BeanUtils.copyProperties(updateFrom, toUpdate, ServiceUtils.getNullPropertyNames(updateFrom));
+        Company newCompany = companyRepository.save(toUpdate);
+
+        // Historical record update
+        CompanyHistoryDTO newCompanyHistory = new CompanyHistoryDTO();
+
+        if(effectiveDate != null) {
+            // Existing historical record:
+            // Step 1 - Find the original historical record
+            // Step 2 - Delete the original historical record and allow triggers to shift historical records in the database
+            CompanyHistory history = newCompany.getCompanyHistories().stream()
+                    .filter(f -> f.getId().getStartDate().equals(effectiveDate))
+                    .findFirst().orElseThrow(CompanyHistoryNotFoundException::new);
+
+            newCompanyHistory = CompanyHistoryDTO.fromEntity(history);
+
+            companyHistoryRepository.deleteByEmbeddedId(history.getId());
+            newCompany.getCompanyHistories().remove(history);
+
         }
 
-        // to scenarier der skal håndteres her
-        // 1) vi opdaterer en historisk company, dvs input fra UI er effective dated,
-        // 2) vi opdaterer den senest aktive historiske company, altså hvor end date ikke er imødekommet - dvs vi skal oprette en ny history
-        LocalDate effectiveDate = update.getStartDate();
+        CompanyHistoryDTO updateCompanyHistoryDTO = new CompanyHistoryDTO(newCompany.getInternalId(),
+                update.getStartDate(), update.getName(), update.getLanguagePackDefault(), update.getTimezone());
+        BeanUtils.copyProperties(updateCompanyHistoryDTO, newCompanyHistory, ServiceUtils.getNullPropertyNames(updateCompanyHistoryDTO));
+        newCompany.getCompanyHistories().add(CompanyHistory.fromDTO(newCompanyHistory));
+        companyRepository.save(newCompany);
+        entityManager.flush();
+        entityManager.refresh(newCompany);
 
-
-        // Historical record update - add new with effective date and make current effective one non-effective
-        return null;
+        log.info("Successfully updated company with ID: {}", newCompany.getInternalId());
+        return CompanyDTO.fromEntity(newCompany, newCompanyHistory.getStartDate());
     }
 
-    public CompanyHistoryDTO createCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO request) {
-        return null;
+    @Transactional
+    public CompanyHistoryDTO createCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO insert) throws CompanyNotFoundException {
+        Company company = companyRepository.findCompanyById(internalId)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        // Historical record insert
+        Optional<CompanyHistory> exist = company.getCompanyHistories().stream()
+                .filter(f -> f.getId().getStartDate().equals(insert.getStartDate()))
+                .findFirst();
+        if(exist.isPresent()) {
+            companyHistoryRepository.deleteByEmbeddedId(exist.get().getId());
+            entityManager.flush();
+            entityManager.refresh(company);
+        }
+
+        CompanyHistoryDTO companyHistoryDTO = new CompanyHistoryDTO(company.getInternalId(),
+                insert.getStartDate(), insert.getName(), insert.getLanguagePackDefault(), insert.getTimezone());
+
+        CompanyHistory newCompanyHistory = CompanyHistory.fromDTO(companyHistoryDTO);
+        company.getCompanyHistories().add(newCompanyHistory);
+        companyRepository.save(company);
+
+        log.info("Successfully inserted historical record for company with ID: {}", company.getInternalId());
+        return companyHistoryDTO;
     }
 
-//    @Transactional
-//    public Company createCompany(String externalId, String companyName, UUID tenantId) throws TenantNotFoundException {
-//        validateNotBlank(externalId, "Company external Id");
-//        validateNotBlank(companyName, "Company name");
-//        validateNotBlank(tenantId.toString(), "Tenant Internal Id");
-//
-//        Company company = new Company();
-//        company.setTenant(tenantId);
-//        company.setExternalId(externalId);
-//        company.setName(companyName);
-//        company.setRecordStatus(RecordStatus.ACTIVE.getValue());
-//        company.setLanguagePackDefault(languagePackService.getDefaultLanguagePackByTenantId(tenantId));
-//
-//        Company created = companyRepository.saveAndFlush(company);
-//        log.info("Successfully created company with ID: {}", created.getId());
-//        return created;
-//    }
-//
-//    public CompanyProjection deleteCompanyById(UUID companyId) throws CompanyNotFoundException {
-//        Optional<Company> byId = companyRepository.findById(companyId);
-//        if(byId.isPresent()) {
-//            Company company = byId.get();
-//            company.setRecordStatus(RecordStatus.INACTIVE.getValue());
-//
-//            companyRepository.save(company);
-//            CompanyProjection deleted = companyRepository.findCompanyById(companyId);
-//            log.info("Successfully deleted company with ID: {}", companyId);
-//            return deleted;
-//        } else {
-//            log.error("Company with ID {} could not be deleted because " +
-//                    "it was not found in the database.", companyId);
-//            throw new CompanyNotFoundException();
-//        }
-//    }
-//
-//    public CompanyProjection updateCompany(Company newCompany, UUID companyId) throws CompanyNotFoundException, ImmutableUpdateException {
-//        Optional<Company> byId = companyRepository.findById(companyId);
-//        if(byId.isPresent()) {
-//            Company company = byId.get();
-//            ImmutableFieldValidation.validate(newCompany, company);
-//            BeanUtils.copyProperties(newCompany, company, ServiceUtils.getNullPropertyNames(newCompany));
-//
-//            companyRepository.save(company);
-//            CompanyProjection saved = companyRepository.findCompanyById(companyId);
-//            log.info("Successfully updated company with ID: {}", companyId);
-//            return saved;
-//        } else {
-//            log.error("Company with ID {} could not be updated because " +
-//                    "it was not found in the database.", companyId);
-//            throw new CompanyNotFoundException();
-//        }
-//    }
-//
+    @Transactional
+    public CompanyHistoryDTO deleteCompanyHistoricalRecord(UUID internalId, CompanyHistoryDTO toDelete) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
+        Company company = companyRepository.findCompanyById(internalId)
+                .orElseThrow(CompanyNotFoundException::new);
+
+        // Historical record insert
+        CompanyHistory exist = company.getCompanyHistories().stream()
+                .filter(f -> f.getId().getStartDate().equals(toDelete.getStartDate()))
+                .findFirst().orElseThrow(CompanyHistoryNotFoundException::new);
+
+        if(company.getCompanyHistories().size() == 1) {
+            companyRepository.delete(company);
+            log.info("Successfully deleted last historical record and company with ID: {}", company.getInternalId());
+        } else {
+            companyHistoryRepository.deleteByEmbeddedId(exist.getId());
+            log.info("Successfully deleted historical record for company with ID: {}", company.getInternalId());
+        }
+
+        return CompanyHistoryDTO.fromEntity(exist);
+    }
 }

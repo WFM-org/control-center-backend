@@ -1,10 +1,8 @@
 package ControlCenter.projection;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.annotation.PostConstruct;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @JsonPropertyOrder({"internalId", "tenant", "externalId", "companyHistories"})
