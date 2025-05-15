@@ -146,15 +146,15 @@ public class CompanyService {
             entityManager.refresh(company);
         }
 
-        CompanyHistoryDTO companyHistoryDTO = new CompanyHistoryDTO(company.getInternalId(),
+        CompanyHistoryDTO newCompanyHistoryDTO = new CompanyHistoryDTO(company.getInternalId(),
                 record.getStartDate(), record.getName(), record.getLanguagePackDefault(), record.getTimezone());
 
-        CompanyHistory newCompanyHistory = CompanyHistory.fromDTO(companyHistoryDTO);
+        CompanyHistory newCompanyHistory = CompanyHistory.fromDTO(newCompanyHistoryDTO);
         company.getCompanyHistories().add(newCompanyHistory);
         companyRepository.save(company);
 
         log.info("Successfully inserted historical record for company with ID: {}", company.getInternalId());
-        return companyHistoryDTO;
+        return newCompanyHistoryDTO;
     }
 
     @Transactional
