@@ -96,6 +96,9 @@ public class CompanyController {
         } catch (CompanyNotFoundException e) {
             log.error("Failed to create historical record: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (CompanyHistoryFoundException e) {
+            log.error("Failed to create historical record: History with start date: {} already exist", record.getStartDate());
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).build();
         }
     }
 
