@@ -101,18 +101,6 @@ public class CompanyService {
         BeanUtils.copyProperties(updatedCompany, originalCompany, ServiceUtils.getNullPropertyNames(updatedCompany));
         Company newCompany = companyRepository.save(originalCompany);
 
-        // Company A
-            // History A --> Startdate 01-01-2025
-            //          --> Enddate 31-06-2025
-
-            // History B --> Startdate 01-07-2025
-            //          --> Enddate 31-08-2025
-            //          --> Name = Mazlum Grøn Tas
-
-            // History C --> Startdate 01-09-2025
-            //          --> Enddate 01-01-9999
-
-
         // Historical record update
         CompanyHistoryDTO newCompanyHistory = new CompanyHistoryDTO();
 
@@ -127,7 +115,6 @@ public class CompanyService {
             newCompanyHistory = CompanyHistoryDTO.fromEntity(history);
 
             companyHistoryRepository.deleteByEmbeddedId(history.getId());
-            entityManager.flush();
             newCompany.getCompanyHistories().remove(history);
         }
 
