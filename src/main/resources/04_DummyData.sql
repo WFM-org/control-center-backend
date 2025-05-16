@@ -111,7 +111,7 @@ VALUES
     ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'12345675','en_GB'),
     ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'12345675','en_GB');
 
- INSERT INTO Person_History
+ INSERT INTO Person_History (parent,start_date,end_date,first_name,middle_name,last_name,display_name)
 VALUES
     ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLINGTEST')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
     ((SELECT internal_id FROM Person WHERE person_Id = '12345678' and tenant = (SELECT internal_id FROM Tenant WHERE tenant_id = 'SALLING')),'2025-01-01','9999-12-31','John','Allen','Smith','John Smith'),
