@@ -58,10 +58,9 @@ public class CompanyController {
     public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CompanyDTO request) {
         try {
             return ResponseEntity.ok(companyService.createCompany(request));
-        } catch (TenantNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (CompanyControlUnknownError e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (CompanyNotSavedException e) {
+            log.info("Failed to create Company with external id {}", request.getExternalId());
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
@@ -74,14 +73,15 @@ public class CompanyController {
             log.info("Company with id {} is successfully updated", companyId);
             return ResponseEntity.ok(updated);
         } catch (CompanyNotFoundException e) {
-            log.error("Failed to update: Company with id: {} could not be found", companyId);
+            log.error("Failed to upsert Company: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (CompanyHistoryNotFoundException e) {
             log.error("Effective historical record for Company with id: {} and effective date: {} could not be found",
                     companyId, effectiveDate);
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (ImmutableUpdateException e) {
-            log.error("Not allowed to update field(s) with name(s): {}", e.getFieldNames());
+        } catch (CompanyWithImmutableUpdateException e) {
+            log.error("Not allowed to update field(s) with name(s): {} for Company with id: {}",
+                    e.getFieldNames(), companyId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
@@ -104,16 +104,19 @@ public class CompanyController {
 
     @DeleteMapping("/deleteCompanyHistoricalRecord/{companyId}")
     public ResponseEntity<CompanyDTO> deleteCompanyHistory(@PathVariable UUID companyId,
-                                                    @RequestBody CompanyHistoryDTO record) {
+                                                           @RequestBody CompanyHistoryDTO record) {
         try {
-            companyService.deleteCompanyHistoricalRecord(companyId, record);
-            log.info("Company with id {} is deleted successfully", companyId);
+            String logMessage = "Historical record with assigned to Company with id {} is deleted successfully";
+            if(companyService.deleteCompanyHistoricalRecord(companyId, record)) {
+                logMessage = "Company with with id {} and historical data is deleted successfully";
+            }
+            log.info(logMessage, companyId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (CompanyNotFoundException e) {
+            log.error("Failed to delete historical record: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (CompanyHistoryNotFoundException e) {
-            log.error("Effective historical record for Company with id: {} and start date: {} could not be found",
-                    companyId, record.getStartDate());
+            log.error("Failed to delete historical record: History with start date: {} could not be found", record.getStartDate());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -125,6 +128,7 @@ public class CompanyController {
             log.info("Company with id {} is deleted successfully", companyId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (CompanyNotFoundException e) {
+            log.error("Failed to delete Company: Company with id: {} could not be found", companyId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

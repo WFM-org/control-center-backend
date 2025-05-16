@@ -33,14 +33,16 @@ public class CompanyHistoryDTO {
     }
 
     public static CompanyHistoryDTO fromEntity(CompanyHistory companyHistory) {
+        LanguagePackDTO languagePackDTO = null;
+        if(companyHistory.getLanguagePackDefault() != null) {
+            languagePackDTO = new LanguagePackDTO(companyHistory.getLanguagePackDefault().getInternalId(),
+                    companyHistory.getLanguagePackDefault().getLanguageName());
+        }
         return new CompanyHistoryDTO(companyHistory.getId().getParent(),
                 companyHistory.getEndDate(),
                 companyHistory.getId().getStartDate(),
                 companyHistory.getName(),
-                new LanguagePackDTO(
-                        companyHistory.getLanguagePackDefault().getInternalId(),
-                        companyHistory.getLanguagePackDefault().getLanguageName()
-                ),
+                languagePackDTO,
                 companyHistory.getTimezone(),
                 companyHistory.getRecordStatus());
     }
