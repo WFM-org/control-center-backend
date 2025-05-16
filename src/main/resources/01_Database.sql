@@ -135,13 +135,14 @@ CREATE TABLE orgunit
 
 CREATE TABLE orgunit_history
 (
-    parent UUID,
-    start_date DATE,
+    internal_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent UUID not NUll,
+    start_date DATE not NUll,
     end_date DATE,
     name VARCHAR(64) NOT NULL,
     record_status smallint not null,
     parent_unit UUID,
-    PRIMARY KEY (parent, start_date),
+    CONSTRAINT unique_orgunitHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_orgunit_ref FOREIGN KEY (parent) REFERENCES orgunit (internal_id) ON DELETE cascade,
     CONSTRAINT fk_orgunit_parentunit FOREIGN KEY (parent_unit) REFERENCES orgunit (internal_id) ON DELETE CASCADE
 );
@@ -157,13 +158,14 @@ CREATE TABLE cost_center
 
 CREATE TABLE  cost_center_history
 (
-    parent UUID,
-    start_date DATE,
+    internal_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent UUID not NUll,
+    start_date DATE not NUll,
     end_date DATE,
     name VARCHAR(64) NOT NULL,
     record_status smallint not null,
     parent_unit UUID,
-    PRIMARY KEY (parent, start_date),
+    CONSTRAINT unique_costcenterHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_costcenter_ref FOREIGN KEY (parent) REFERENCES cost_center (internal_id) ON DELETE cascade,
     CONSTRAINT fk_costcenter_parentunit FOREIGN KEY (parent_unit) REFERENCES cost_center (internal_id) ON DELETE CASCADE
 );
@@ -188,14 +190,15 @@ CREATE TABLE company
 
 CREATE TABLE  company_history
 (
-    parent UUID,
-    start_date DATE,
+    internal_id UUID PRIMARY key DEFAULT gen_random_uuid(),
+    parent UUID not NUll,
+    start_date DATE not NUll,
     end_date DATE,
     name VARCHAR(64) NOT NULL,
     default_language_pack VARCHAR(10),
     default_timezone varChar(64),
     record_status smallint not null,
-    PRIMARY KEY (parent, start_date),
+    CONSTRAINT unique_companyHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_company_ref FOREIGN KEY (parent) REFERENCES company (internal_id) ON DELETE cascade,
     CONSTRAINT fk_company_language_pack FOREIGN KEY (default_language_pack) REFERENCES language_pack (internal_id),
     CONSTRAINT fk_company_timezone FOREIGN KEY (default_timezone) REFERENCES timezone (tz_name)
@@ -225,14 +228,15 @@ CREATE TABLE person
 
 CREATE TABLE person_history
 (
-    parent UUID,
-    start_date DATE,
+    internal_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent UUID not NUll,
+    start_date DATE not NUll,
     end_date DATE,
     first_name VARCHAR(64),
     middle_name VARCHAR(64),
     last_name VARCHAR(64),
     display_name VARCHAR(128),
-    PRIMARY KEY (parent, start_date),
+    CONSTRAINT unique_personHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_personhistory_parent FOREIGN KEY (parent) REFERENCES person (internal_id) ON DELETE CASCADE
 );
 
@@ -259,7 +263,8 @@ CREATE TABLE employment
 
 CREATE TABLE employment_history
 (
-    parent UUID,
+    internal_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent UUID not NUll,
     start_date DATE not NUll,
     end_date DATE,
     event smallint NOT NULL,
@@ -270,7 +275,7 @@ CREATE TABLE employment_history
     hr UUID,
     orgunit UUID,
     cost_center UUID,
-    PRIMARY KEY (parent, start_date),
+    CONSTRAINT unique_employmentHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_employmenthistory_orgunit FOREIGN KEY (orgunit) REFERENCES orgunit (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_cost_center FOREIGN KEY (cost_center) REFERENCES cost_center (internal_id) ON DELETE CASCADE,
     CONSTRAINT fk_employmenthistory_id FOREIGN KEY (parent) REFERENCES employment (internal_id),
