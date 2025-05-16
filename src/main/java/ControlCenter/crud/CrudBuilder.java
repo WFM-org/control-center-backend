@@ -20,6 +20,28 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Overview of Functionality
+ *
+ * The CrudBuilder handles four main operations:
+ *
+ * - CREATE: Creates the entity and a corresponding historical record.
+ * - READ:   Reads the entity as it existed at a specific point in time (via historical data).
+ * - UPDATE: Updates both the entity and its history. Includes immutable field validation and historical context switching.
+ * - DELETE: Removes a historical record or, if it's the last one, the entire entity.
+ *
+ * The entire design is highly generic and powered by functional interfaces,
+ * which ensures strong flexibility and decoupling from specific domain logic.
+ *
+ * Strengths
+ *
+ * - High reusability: Business logic is encapsulated in injectable functions,
+ *   making this component easy to apply across domains.
+ * - Temporal modeling: Historical tracking is seamlessly integrated into all operations.
+ * - Immutable field validation: Combined with BeanUtils, this makes it easy to
+ *   enforce business rules with minimal duplication.
+ */
+
 public class CrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO, HistoricalId> {
 
     private final Function<UUID, Optional<Entity>> findById;
