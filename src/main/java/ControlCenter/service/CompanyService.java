@@ -1,6 +1,6 @@
 package ControlCenter.service;
 
-import ControlCenter.crud.CrudBuilder;
+import ControlCenter.crud.HistoricalDataCrudBuilder;
 import ControlCenter.dto.CompanyDTO;
 import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.Company;
@@ -22,17 +22,19 @@ import java.util.UUID;
 @Service
 public class CompanyService {
 
-    private final CrudBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
+    private final HistoricalDataCrudBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
 
     public CompanyService(CompanyRepository companyRepository,
                           CompanyHistoryRepository companyHistoryRepository,
                           EntityManager entityManager) {
 
-        this.builder = new CrudBuilder<>(
+        this.builder = new HistoricalDataCrudBuilder<>(
                 companyRepository::findCompanyById,
                 companyRepository::findCompaniesByTenantId,
-                this::createNewHistoricalRecordFromCompanyDTO,
-                this::createNewHistoricalRecordFromCompanyHistoryDTO,
+                (dto, id) -> new CompanyHistoryDTO(null, id,
+                        dto.getStartDate(), dto.getName(), dto.getLanguagePackDefault(), dto.getTimezone()),
+                (dto, id) -> new CompanyHistoryDTO(null, id,
+                        dto.getStartDate(), dto.getName(), dto.getLanguagePackDefault(), dto.getTimezone()),
                 companyRepository::save,
                 companyHistoryRepository::save,
                 companyRepository::delete,
@@ -107,15 +109,5 @@ public class CompanyService {
         } catch (HistoricalEntityNotFoundException e) {
             throw new CompanyHistoryNotFoundException();
         }
-    }
-
-    protected CompanyHistoryDTO createNewHistoricalRecordFromCompanyDTO(CompanyDTO companyDTO, UUID internalId) {
-        return new CompanyHistoryDTO(null, internalId,
-                companyDTO.getStartDate(), companyDTO.getName(), companyDTO.getLanguagePackDefault(), companyDTO.getTimezone());
-    }
-
-    protected CompanyHistoryDTO createNewHistoricalRecordFromCompanyHistoryDTO(CompanyHistoryDTO companyHistoryDTO, UUID internalId) {
-        return new CompanyHistoryDTO(null, internalId,
-                companyHistoryDTO.getStartDate(), companyHistoryDTO.getName(), companyHistoryDTO.getLanguagePackDefault(), companyHistoryDTO.getTimezone());
     }
 }
