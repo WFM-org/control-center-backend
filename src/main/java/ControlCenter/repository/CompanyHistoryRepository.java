@@ -9,10 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Repository
-public interface CompanyHistoryRepository extends JpaRepository<CompanyHistory, CompanyHistoryId> {
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM CompanyHistory ch WHERE ch.id = :id")
-    void deleteByEmbeddedId(@Param("id") CompanyHistoryId id);
+public interface CompanyHistoryRepository extends JpaRepository<CompanyHistory, UUID> {
 }

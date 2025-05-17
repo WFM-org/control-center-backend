@@ -5,7 +5,6 @@ import ControlCenter.dto.CompanyDTO;
 import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.Company;
 import ControlCenter.entity.CompanyHistory;
-import ControlCenter.entity.compositeKey.CompanyHistoryId;
 import ControlCenter.exception.*;
 import ControlCenter.repository.CompanyHistoryRepository;
 import ControlCenter.repository.CompanyRepository;
@@ -23,7 +22,7 @@ import java.util.UUID;
 @Service
 public class CompanyService {
 
-    private final CrudBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO, CompanyHistoryId> builder;
+    private final CrudBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
 
     public CompanyService(CompanyRepository companyRepository,
                           CompanyHistoryRepository companyHistoryRepository,
@@ -32,23 +31,24 @@ public class CompanyService {
         this.builder = new CrudBuilder<>(
                 companyRepository::findCompanyById,
                 companyRepository::findCompaniesByTenantId,
-                this::createHistoricalRecordFromCompanyDTOCallBack,
-                this::createHistoricalRecordFromCompanyHistoryDTOCallBack,
+                this::createNewHistoricalRecordFromCompanyDTO,
+                this::createNewHistoricalRecordFromCompanyHistoryDTO,
                 companyRepository::save,
+                companyHistoryRepository::save,
                 companyRepository::delete,
-                companyHistoryRepository::deleteByEmbeddedId,
+                companyHistoryRepository::delete,
                 Company::getCompanyHistories,
-                this::setCompanyHistoriesCallBack,
                 CompanyDTO::getStartDate,
-                this::fetchStartDateFromCompanyHistoryDTOCallBack,
+                CompanyHistory::getStartDate,
                 CompanyHistoryDTO::getStartDate,
-                CompanyHistory::getId,
                 Company::getInternalId,
                 Company::fromDTO,
                 CompanyDTO::fromEntity,
                 CompanyHistory::fromDTO,
                 CompanyHistoryDTO::fromEntity,
-                this::initializeEmptyHistoricalDTOCallBack,
+                CompanyHistoryDTO::new,
+                (ch, c) -> c.addCompanyHistory(ch),
+                (ch) -> ch.setInternalId(null),
                 entityManager
         );
     }
@@ -69,10 +69,12 @@ public class CompanyService {
         }
     }
 
+    @Transactional
     public CompanyDTO createCompany(CompanyDTO company) throws CompanyNotSavedException {
         return builder.createEntity(company);
     }
 
+    @Transactional
     public CompanyDTO updateCompany(UUID internalId, LocalDate effectiveDate, CompanyDTO update) throws CompanyHistoryNotFoundException, CompanyWithImmutableUpdateException, CompanyNotFoundException {
         try {
             return builder.updateEntity(internalId, effectiveDate, update);
@@ -85,6 +87,7 @@ public class CompanyService {
         }
     }
 
+    @Transactional
     public CompanyHistoryDTO createCompanyHistoricalRecord(UUID parentId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryFoundException {
         try {
             return builder.createHistoricalRecord(parentId, record);
@@ -95,6 +98,7 @@ public class CompanyService {
         }
     }
 
+    @Transactional
     public Boolean deleteCompanyHistoricalRecord(UUID parentId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
         try {
             return builder.deleteHistoricalRecord(parentId, record);
@@ -105,25 +109,13 @@ public class CompanyService {
         }
     }
 
-    protected Company setCompanyHistoriesCallBack(List<CompanyHistory> histories, Company company) {
-        company.setCompanyHistories(histories);
-        return company;
-    }
-
-    protected CompanyHistoryDTO initializeEmptyHistoricalDTOCallBack() {
-        return new CompanyHistoryDTO();
-    }
-    protected LocalDate fetchStartDateFromCompanyHistoryDTOCallBack(CompanyHistory companyHistory) {
-        return companyHistory.getId().getStartDate();
-    }
-
-    protected CompanyHistoryDTO createHistoricalRecordFromCompanyDTOCallBack(CompanyDTO companyDTO, UUID internalId) {
-        return new CompanyHistoryDTO(internalId,
+    protected CompanyHistoryDTO createNewHistoricalRecordFromCompanyDTO(CompanyDTO companyDTO, UUID internalId) {
+        return new CompanyHistoryDTO(null, internalId,
                 companyDTO.getStartDate(), companyDTO.getName(), companyDTO.getLanguagePackDefault(), companyDTO.getTimezone());
     }
 
-    protected CompanyHistoryDTO createHistoricalRecordFromCompanyHistoryDTOCallBack(CompanyHistoryDTO companyHistoryDTO, UUID internalId) {
-        return new CompanyHistoryDTO(internalId,
+    protected CompanyHistoryDTO createNewHistoricalRecordFromCompanyHistoryDTO(CompanyHistoryDTO companyHistoryDTO, UUID internalId) {
+        return new CompanyHistoryDTO(null, internalId,
                 companyHistoryDTO.getStartDate(), companyHistoryDTO.getName(), companyHistoryDTO.getLanguagePackDefault(), companyHistoryDTO.getTimezone());
     }
 }

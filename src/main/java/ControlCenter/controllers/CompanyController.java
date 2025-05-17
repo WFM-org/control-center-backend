@@ -57,6 +57,8 @@ public class CompanyController {
     @PostMapping("/createCompany")
     public ResponseEntity<CompanyDTO> createCompany(@Valid @RequestBody CompanyDTO request) {
         try {
+            TenantProjection tenant = getTenantIdFromJWTToken();
+            request.setTenant(tenant.getInternalId());
             return ResponseEntity.ok(companyService.createCompany(request));
         } catch (CompanyNotSavedException e) {
             log.info("Failed to create Company with external id {}", request.getExternalId());

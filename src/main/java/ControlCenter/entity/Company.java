@@ -1,6 +1,7 @@
 package ControlCenter.entity;
 
 import ControlCenter.dto.CompanyDTO;
+import ControlCenter.dto.CompanyHistoryDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,20 @@ public class Company {
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CompanyHistory> companyHistories;
+
+    public void addCompanyHistory(CompanyHistory history) {
+        if (companyHistories == null) {
+            companyHistories = new ArrayList<>();
+        }
+        companyHistories.add(history);
+        history.setCompany(this);
+    }
+
+    public void removeCompanyHistory(CompanyHistory history) {
+        if (companyHistories != null) {
+            companyHistories.remove(history);
+        }
+    }
 
     public static Company fromDTO(CompanyDTO dto) {
         Company company = new Company();

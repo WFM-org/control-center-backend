@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompanyHistoryDTO {
+    private UUID internalId;
     private UUID companyId;
     private LocalDate endDate;
     private LocalDate startDate;
@@ -23,7 +24,8 @@ public class CompanyHistoryDTO {
     private String timezone;
     private Short recordStatus;
 
-    public CompanyHistoryDTO(UUID companyId, LocalDate startDate, String name, LanguagePackDTO languagePack, String timezone) {
+    public CompanyHistoryDTO(UUID internalId, UUID companyId, LocalDate startDate, String name, LanguagePackDTO languagePack, String timezone) {
+        this.internalId = internalId;
         this.companyId = companyId;
         this.startDate = startDate;
         this.name = name;
@@ -38,9 +40,14 @@ public class CompanyHistoryDTO {
             languagePackDTO = new LanguagePackDTO(companyHistory.getLanguagePackDefault().getInternalId(),
                     companyHistory.getLanguagePackDefault().getLanguageName());
         }
-        return new CompanyHistoryDTO(companyHistory.getId().getParent(),
+        UUID companyId = null;
+        if(companyHistory.getCompany() != null) {
+            companyId = companyHistory.getInternalId();
+        }
+        return new CompanyHistoryDTO(companyHistory.getInternalId(),
+                companyId,
                 companyHistory.getEndDate(),
-                companyHistory.getId().getStartDate(),
+                companyHistory.getStartDate(),
                 companyHistory.getName(),
                 languagePackDTO,
                 companyHistory.getTimezone(),
