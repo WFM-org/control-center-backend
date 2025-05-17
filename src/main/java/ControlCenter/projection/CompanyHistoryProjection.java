@@ -1,5 +1,6 @@
 package ControlCenter.projection;
 
+import ControlCenter.entity.LanguagePack;
 import ControlCenter.entity.compositeKey.CompanyHistoryId;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

@@ -1,5 +1,7 @@
 package ControlCenter.entity;
 
+import ControlCenter.dto.CompanyHistoryDTO;
+import ControlCenter.dto.LanguagePackDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,6 +15,8 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "language_pack")
+@AllArgsConstructor
+@NoArgsConstructor
 public class LanguagePack {
     @Id
     @Column(name = "internal_id", nullable = false, length = 10)
@@ -21,4 +25,7 @@ public class LanguagePack {
     @Column(name = "name", nullable = false, length = 32)
     private String languageName;
 
+    public static LanguagePack fromDTO(LanguagePackDTO dto) {
+        return new LanguagePack(dto.getInternalId(), dto.getLanguageName());
+    }
 }

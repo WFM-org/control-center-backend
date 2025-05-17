@@ -5,9 +5,9 @@ import ControlCenter.entity.Tenant;
 
 import java.util.UUID;
 
-@JsonPropertyOrder({"id", "tenantId", "tenantName", "adminEmail", "languagePackDefault"})
+@JsonPropertyOrder({"internalId", "tenantId", "tenantName", "adminEmail", "languagePackDefault"})
 public interface TenantProjection {
-    UUID getId();
+    UUID getInternalId();
 
     String getTenantId();
 
@@ -20,7 +20,7 @@ public interface TenantProjection {
     static TenantProjection mapToTenantProjection(Tenant tenant) {
         return new TenantProjection() {
             @Override
-            public UUID getId() {
+            public UUID getInternalId() {
                 return tenant.getInternalId();
             }
 

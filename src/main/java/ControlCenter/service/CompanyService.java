@@ -1,10 +1,17 @@
 package ControlCenter.service;
 
+import ControlCenter.builder.HistoricalDataManagementBuilder;
+import ControlCenter.dto.CompanyDTO;
+import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.Company;
+import ControlCenter.entity.CompanyHistory;
+import ControlCenter.exception.*;
+import ControlCenter.repository.CompanyHistoryRepository;
+import ControlCenter.repository.CompanyRepository;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ControlCenter.projection.CompanyProjection;
-import ControlCenter.repository.CompanyRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,82 +22,92 @@ import java.util.UUID;
 @Service
 public class CompanyService {
 
-    private final CompanyRepository companyRepository;
-    private final LanguagePackService languagePackService;
+    private final HistoricalDataManagementBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
 
-    public CompanyService(CompanyRepository companyRepository, LanguagePackService languagePackService) {
-        this.companyRepository = companyRepository;
-        this.languagePackService = languagePackService;
+    public CompanyService(CompanyRepository companyRepository,
+                          CompanyHistoryRepository companyHistoryRepository,
+                          EntityManager entityManager) {
+
+        this.builder = new HistoricalDataManagementBuilder<>(
+                companyRepository::findCompanyById,
+                companyRepository::findCompaniesByTenantId,
+                (dto, id) -> new CompanyHistoryDTO(null, id,
+                        dto.getStartDate(), dto.getName(), dto.getLanguagePackDefault(), dto.getTimezone()),
+                (dto, id) -> new CompanyHistoryDTO(null, id,
+                        dto.getStartDate(), dto.getName(), dto.getLanguagePackDefault(), dto.getTimezone()),
+                companyRepository::save,
+                companyHistoryRepository::save,
+                companyRepository::delete,
+                companyHistoryRepository::delete,
+                Company::getCompanyHistories,
+                CompanyDTO::getStartDate,
+                CompanyHistory::getStartDate,
+                CompanyHistoryDTO::getStartDate,
+                Company::getInternalId,
+                Company::fromDTO,
+                CompanyDTO::fromEntity,
+                CompanyHistory::fromDTO,
+                CompanyHistoryDTO::fromEntity,
+                CompanyHistoryDTO::new,
+                (ch, c) -> c.addCompanyHistory(ch),
+                (ch) -> ch.setInternalId(null),
+                entityManager
+        );
     }
 
-//    public List<CompanyProjection> getAllCompanies() {
-//        return companyRepository.findAllCompanies();
-//    }
-
-    public Optional<CompanyProjection> getCompanyByExternalId(UUID internalId, LocalDate effectiveDate) {
-        return companyRepository.findCompanyByInternalId(internalId, effectiveDate);
+    public Optional<CompanyDTO> getCompanyByInternalId(UUID internalId, LocalDate effectiveDate) {
+        return builder.readById(internalId, effectiveDate);
     }
 
-//    public List<CompanyProjection> getCompanyByName(String companyName) {
-//        return companyRepository.findCompaniesByCompanyName(companyName);
-//    }
+    public List<CompanyDTO> getCompaniesByTenant(UUID tenantId, LocalDate effectiveDate) {
+        return builder.readByTenant(tenantId, effectiveDate);
+    }
 
-//    @Transactional
-//    public Company createCompany(String externalId, String companyName, UUID tenantId) throws TenantNotFoundException {
-//        validateNotBlank(externalId, "Company external Id");
-//        validateNotBlank(companyName, "Company name");
-//        validateNotBlank(tenantId.toString(), "Tenant Internal Id");
-//
-//        Company company = new Company();
-//        company.setTenant(tenantId);
-//        company.setExternalId(externalId);
-//        company.setName(companyName);
-//        company.setRecordStatus(RecordStatus.ACTIVE.getValue());
-//        company.setLanguagePackDefault(languagePackService.getDefaultLanguagePackByTenantId(tenantId));
-//
-//        Company created = companyRepository.saveAndFlush(company);
-//        log.info("Successfully created company with ID: {}", created.getId());
-//        return created;
-//    }
-//
-//    public CompanyProjection deleteCompanyById(UUID companyId) throws CompanyNotFoundException {
-//        Optional<Company> byId = companyRepository.findById(companyId);
-//        if(byId.isPresent()) {
-//            Company company = byId.get();
-//            company.setRecordStatus(RecordStatus.INACTIVE.getValue());
-//
-//            companyRepository.save(company);
-//            CompanyProjection deleted = companyRepository.findCompanyById(companyId);
-//            log.info("Successfully deleted company with ID: {}", companyId);
-//            return deleted;
-//        } else {
-//            log.error("Company with ID {} could not be deleted because " +
-//                    "it was not found in the database.", companyId);
-//            throw new CompanyNotFoundException();
-//        }
-//    }
-//
-//    public CompanyProjection updateCompany(Company newCompany, UUID companyId) throws CompanyNotFoundException, ImmutableUpdateException {
-//        Optional<Company> byId = companyRepository.findById(companyId);
-//        if(byId.isPresent()) {
-//            Company company = byId.get();
-//            ImmutableFieldValidation.validate(newCompany, company);
-//            BeanUtils.copyProperties(newCompany, company, ServiceUtils.getNullPropertyNames(newCompany));
-//
-//            companyRepository.save(company);
-//            CompanyProjection saved = companyRepository.findCompanyById(companyId);
-//            log.info("Successfully updated company with ID: {}", companyId);
-//            return saved;
-//        } else {
-//            log.error("Company with ID {} could not be updated because " +
-//                    "it was not found in the database.", companyId);
-//            throw new CompanyNotFoundException();
-//        }
-//    }
-//
-//    private void validateNotBlank(String value, String fieldName) {
-//        if (value == null || value.isBlank()) {
-//            throw new IllegalArgumentException(fieldName + " can not be empty");
-//        }
-//    }
+    public void deleteCompany(UUID internalId) throws CompanyNotFoundException {
+        try {
+            builder.deleteEntity(internalId);
+        } catch (EntityNotFoundException e) {
+            throw new CompanyNotFoundException();
+        }
+    }
+
+    @Transactional
+    public CompanyDTO createCompany(CompanyDTO company) throws CompanyNotSavedException {
+        return builder.createEntity(company);
+    }
+
+    @Transactional
+    public CompanyDTO updateCompany(UUID internalId, LocalDate effectiveDate, CompanyDTO update) throws CompanyHistoryNotFoundException, CompanyWithImmutableUpdateException, CompanyNotFoundException {
+        try {
+            return builder.updateEntity(internalId, effectiveDate, update);
+        } catch (EntityNotFoundException e) {
+            throw new CompanyNotFoundException();
+        } catch (HistoricalEntityNotFoundException e) {
+            throw new CompanyHistoryNotFoundException();
+        } catch (ImmutableUpdateException e) {
+            throw new CompanyWithImmutableUpdateException(e.getFieldNames());
+        }
+    }
+
+    @Transactional
+    public CompanyHistoryDTO createCompanyHistoricalRecord(UUID parentId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryFoundException {
+        try {
+            return builder.createHistoricalRecord(parentId, record);
+        } catch (EntityNotFoundException e) {
+            throw new CompanyNotFoundException();
+        } catch (HistoricalEntityAlreadyExistException e) {
+            throw new CompanyHistoryFoundException();
+        }
+    }
+
+    @Transactional
+    public Boolean deleteCompanyHistoricalRecord(UUID parentId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
+        try {
+            return builder.deleteHistoricalRecord(parentId, record);
+        } catch (EntityNotFoundException e) {
+            throw new CompanyNotFoundException();
+        } catch (HistoricalEntityNotFoundException e) {
+            throw new CompanyHistoryNotFoundException();
+        }
+    }
 }
