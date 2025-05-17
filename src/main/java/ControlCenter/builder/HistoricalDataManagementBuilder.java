@@ -1,4 +1,4 @@
-package ControlCenter.crud;
+package ControlCenter.builder;
 
 import ControlCenter.exception.EntityNotFoundException;
 import ControlCenter.exception.HistoricalEntityAlreadyExistException;
@@ -38,7 +38,7 @@ import java.util.function.*;
  *   enforce business rules with minimal duplication.
  */
 
-public class HistoricalDataCrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
+public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
 
     private final Function<UUID, Optional<Entity>> findById;
     private final Function<UUID, Optional<Entity>> findByTenant;
@@ -62,7 +62,7 @@ public class HistoricalDataCrudBuilder<Entity, HistoricalEntity, DTO, Historical
     private final Consumer<HistoricalDTO> clearHistoricalId;
     private final EntityManager entityManager;
 
-    public HistoricalDataCrudBuilder(Function<UUID, Optional<Entity>> findById, Function<UUID, Optional<Entity>> findByTenant, BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO, BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO, Function<Entity, Entity> save, Function<HistoricalEntity, HistoricalEntity> saveHistory, Consumer<Entity> delete, Consumer<HistoricalEntity> deleteHistory, Function<Entity, List<HistoricalEntity>> getEntityHistories, Function<DTO, LocalDate> getStartDate, Function<HistoricalEntity, LocalDate> getEntityHistoryStartDate, Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate, Function<Entity, UUID> getId, Function<DTO, Entity> toEntity, BiFunction<Entity, LocalDate, DTO> toDTO, BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity, Function<HistoricalEntity, HistoricalDTO> toHistoricalDTO, Supplier<HistoricalDTO> historicalDTOSupplier, BiConsumer<HistoricalEntity, Entity> addHistoricalEntity, Consumer<HistoricalDTO> clearHistoricalId, EntityManager entityManager) {
+    public HistoricalDataManagementBuilder(Function<UUID, Optional<Entity>> findById, Function<UUID, Optional<Entity>> findByTenant, BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO, BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO, Function<Entity, Entity> save, Function<HistoricalEntity, HistoricalEntity> saveHistory, Consumer<Entity> delete, Consumer<HistoricalEntity> deleteHistory, Function<Entity, List<HistoricalEntity>> getEntityHistories, Function<DTO, LocalDate> getStartDate, Function<HistoricalEntity, LocalDate> getEntityHistoryStartDate, Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate, Function<Entity, UUID> getId, Function<DTO, Entity> toEntity, BiFunction<Entity, LocalDate, DTO> toDTO, BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity, Function<HistoricalEntity, HistoricalDTO> toHistoricalDTO, Supplier<HistoricalDTO> historicalDTOSupplier, BiConsumer<HistoricalEntity, Entity> addHistoricalEntity, Consumer<HistoricalDTO> clearHistoricalId, EntityManager entityManager) {
         this.findById = findById;
         this.findByTenant = findByTenant;
         this.fabricateNewHistoricalRecordFromDTO = fabricateNewHistoricalRecordFromDTO;

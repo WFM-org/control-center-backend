@@ -1,6 +1,6 @@
 package ControlCenter.service;
 
-import ControlCenter.crud.HistoricalDataCrudBuilder;
+import ControlCenter.builder.HistoricalDataManagementBuilder;
 import ControlCenter.dto.CompanyDTO;
 import ControlCenter.dto.CompanyHistoryDTO;
 import ControlCenter.entity.Company;
@@ -22,13 +22,13 @@ import java.util.UUID;
 @Service
 public class CompanyService {
 
-    private final HistoricalDataCrudBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
+    private final HistoricalDataManagementBuilder<Company, CompanyHistory, CompanyDTO, CompanyHistoryDTO> builder;
 
     public CompanyService(CompanyRepository companyRepository,
                           CompanyHistoryRepository companyHistoryRepository,
                           EntityManager entityManager) {
 
-        this.builder = new HistoricalDataCrudBuilder<>(
+        this.builder = new HistoricalDataManagementBuilder<>(
                 companyRepository::findCompanyById,
                 companyRepository::findCompaniesByTenantId,
                 (dto, id) -> new CompanyHistoryDTO(null, id,
