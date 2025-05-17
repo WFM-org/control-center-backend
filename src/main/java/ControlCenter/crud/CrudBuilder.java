@@ -120,7 +120,6 @@ public class CrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
         Entity updatedEntity = toEntity.apply(update);
         ImmutableFieldValidation.validate(updatedEntity, entity);
         BeanUtils.copyProperties(updatedEntity, entity, ServiceUtils.getNullPropertyNames(updatedEntity));
-        refresh(entity);
 
         // Historical record update
         HistoricalDTO newEntityHistory = historicalDTOSupplier.get();
@@ -129,15 +128,17 @@ public class CrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
             // Existing historical record:
             // Step 1 - Find the original historical record
             // Step 2 - Delete the original historical record and allow triggers to shift historical records in the database
-            HistoricalEntity history = getEntityHistories.apply(entity)
+            List<HistoricalEntity> histories = getEntityHistories.apply(entity);
+
+            HistoricalEntity history = histories
                     .stream()
                     .filter(h -> getEntityHistoryStartDate.apply(h).equals(effectiveDate))
                     .findFirst().orElseThrow(HistoricalEntityNotFoundException::new);
 
             newEntityHistory = toHistoricalDTO.apply(history);
             clearHistoricalId.accept(newEntityHistory);
+            histories.remove(history);
             deleteHistory.accept(history);
-            refresh(entity);
         }
 
         HistoricalDTO sourceUpdateHistoricalDTO = fabricateNewHistoricalRecordFromDTO.apply(update, id);
@@ -173,7 +174,9 @@ public class CrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
     public boolean deleteHistoricalRecord(UUID parentId, HistoricalDTO record) throws HistoricalEntityNotFoundException, EntityNotFoundException {
         Entity parentEntity = findById.apply(parentId).orElseThrow(EntityNotFoundException::new);
 
-        HistoricalEntity history = getEntityHistories.apply(parentEntity)
+        List<HistoricalEntity> histories = getEntityHistories.apply(parentEntity);
+
+        HistoricalEntity history = histories
                 .stream()
                 .filter(h -> getEntityHistoryStartDate.apply(h).equals(getDTOHistoryStartDate.apply(record)))
                 .findFirst().orElseThrow(HistoricalEntityNotFoundException::new);
@@ -183,6 +186,7 @@ public class CrudBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
             delete.accept(parentEntity);
             hasDeletedParent = true;
         } else {
+            histories.remove(history);
             deleteHistory.accept(history);
         }
 
