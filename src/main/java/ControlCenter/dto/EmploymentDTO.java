@@ -2,6 +2,7 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.Employment;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,6 @@ public class EmploymentDTO {
     private LocalDate hireDate;
     private LocalDate terminationDate;
     private LocalDate freezeAccessFrom;
-
     @Historical
     private Short event;
     @Historical
@@ -50,7 +50,7 @@ public class EmploymentDTO {
     private LocalDate startDate;
     @Historical
     private LocalDate endDate;
-
+    @JsonProperty("historical")
     private List<EmploymentHistoryDTO> employmentHistoryList;
 
     public static EmploymentDTO fromEntity(Employment entity, LocalDate effectiveDate) {

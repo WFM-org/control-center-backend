@@ -2,6 +2,7 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.CostCenter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class CostCenterDTO {
     @Historical
     private Short recordStatus;
     private UUID parentUnitId;
+    @JsonProperty("historical")
     private List<CostCenterHistoryDTO> costCenterHistoryList;
 
     public static CostCenterDTO fromEntity(CostCenter cc, LocalDate effectiveDate) {

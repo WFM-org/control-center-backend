@@ -2,6 +2,7 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.OrgUnit;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,10 @@ public class OrgUnitDTO {
     @Historical
     private LocalDate startDate;
     @Historical
+    private LocalDate endDate;
+    @Historical
     private Short recordStatus;
+    @JsonProperty("historical")
     private List<OrgUnitHistoryDTO> orgUnitHistoryList;
 
     public static OrgUnitDTO fromEntity(OrgUnit orgUnit, LocalDate effectiveDate) {
@@ -51,6 +55,7 @@ public class OrgUnitDTO {
                 effectiveDated.map(OrgUnitHistoryDTO::getName).orElse(null),
                 effectiveDated.map(OrgUnitHistoryDTO::getParentUnitId).orElse(null),
                 effectiveDated.map(OrgUnitHistoryDTO::getStartDate).orElse(null),
+                effectiveDated.map(OrgUnitHistoryDTO::getEndDate).orElse(null),
                 effectiveDated.map(OrgUnitHistoryDTO::getRecordStatus).orElse(null),
                 historyList
         );

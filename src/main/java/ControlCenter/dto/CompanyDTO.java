@@ -2,6 +2,7 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.Company;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,7 @@ public class CompanyDTO {
     private LocalDate startDate;
     @Historical
     private Short recordStatus;
+    @JsonProperty("historical")
     private List<CompanyHistoryDTO> companyHistoryList;
 
     public static CompanyDTO fromEntity(Company company, LocalDate effectiveDate) {

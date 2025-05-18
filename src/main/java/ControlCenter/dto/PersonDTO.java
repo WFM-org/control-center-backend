@@ -2,6 +2,7 @@ package ControlCenter.dto;
 
 import ControlCenter.annotations.Historical;
 import ControlCenter.entity.Person;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,6 @@ public class PersonDTO {
     private UUID internalId;
     private UUID tenant;
     private String personId;
-
     @Historical
     private String firstName;
     @Historical
@@ -30,12 +30,11 @@ public class PersonDTO {
     private String displayName;
     @Historical
     private LanguagePackDTO languagePack;
-
     @Historical
     private LocalDate startDate;
     @Historical
     private LocalDate endDate;
-
+    @JsonProperty("historical")
     private List<PersonHistoryDTO> personHistoryList;
 
     public static PersonDTO fromEntity(Person person, LocalDate effectiveDate) {
