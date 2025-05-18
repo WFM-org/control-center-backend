@@ -16,4 +16,7 @@ public interface CompanyProjection {
 
     List<CompanyHistoryProjection> getCompanyHistories();
 
+    String getTimezone();
+
+    LanguagePackProjection getLanguagePackDefault();
 }
