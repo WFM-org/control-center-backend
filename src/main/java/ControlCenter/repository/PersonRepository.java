@@ -20,7 +20,7 @@ public interface PersonRepository extends JpaRepository<Person, UUID> {
     @Query("SELECT p FROM Person p " +
             "JOIN FETCH p.personHistories ph " +
             "WHERE p.tenant = :tenantId")
-    Optional<Person> findPersonsByTenantId(@Param("tenantId") UUID tenantId);
+    List<Person> findPersonsByTenantId(@Param("tenantId") UUID tenantId);
 
     @Query("SELECT p FROM Person p " +
             "JOIN FETCH p.personHistories ph " +

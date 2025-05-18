@@ -21,7 +21,7 @@ public interface OrgUnitRepository extends JpaRepository<OrgUnit, UUID> {
     @Query("SELECT o FROM OrgUnit o " +
             "JOIN FETCH o.orgUnitHistories oh " +
             "WHERE o.tenant = :tenantId")
-    Optional<OrgUnit> findOrgUnitsByTenantId(@Param("tenantId") UUID tenantId);
+    List<OrgUnit> findOrgUnitsByTenantId(@Param("tenantId") UUID tenantId);
 
     @Query("SELECT o FROM OrgUnit o " +
             "JOIN FETCH o.orgUnitHistories oh " +

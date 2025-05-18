@@ -41,7 +41,7 @@ import java.util.function.*;
 public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
 
     private final Function<UUID, Optional<Entity>> findById;
-    private final Function<UUID, Optional<Entity>> findByTenant;
+    private final Function<UUID, List<Entity>> findByTenant;
     private final BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO;
     private final BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO;
     private final Function<Entity, Entity> save;
@@ -63,7 +63,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
     private final EntityManager entityManager;
 
     public HistoricalDataManagementBuilder(Function<UUID, Optional<Entity>> findById,
-                                           Function<UUID, Optional<Entity>> findByTenant,
+                                           Function<UUID, List<Entity>> findByTenant,
                                            BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO,
                                            BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO,
                                            Function<Entity, Entity> save,

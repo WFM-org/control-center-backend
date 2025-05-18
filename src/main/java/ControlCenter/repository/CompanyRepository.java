@@ -20,7 +20,7 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
     @Query("SELECT c FROM Company c " +
             "JOIN FETCH c.companyHistories ch " +
             "WHERE c.tenant = :tenantId")
-    Optional<Company> findCompaniesByTenantId(@Param("tenantId") UUID tenantId);
+    List<Company> findCompaniesByTenantId(@Param("tenantId") UUID tenantId);
 
     @Query("SELECT c FROM Company c " +
             "JOIN FETCH c.companyHistories ch " +

@@ -21,7 +21,7 @@ public interface CostCenterRepository extends JpaRepository<CostCenter, UUID> {
     @Query("SELECT c FROM CostCenter c " +
             "JOIN FETCH c.costCenterHistories ch " +
             "WHERE c.tenant = :tenantId")
-    Optional<CostCenter> findCostCentersByTenantId(@Param("tenantId") UUID tenantId);
+    List<CostCenter> findCostCentersByTenantId(@Param("tenantId") UUID tenantId);
 
     @Query("SELECT c FROM CostCenter c " +
             "JOIN FETCH c.costCenterHistories ch " +

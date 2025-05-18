@@ -21,7 +21,7 @@ public interface EmploymentRepository extends JpaRepository<Employment, UUID> {
     @Query("SELECT e FROM Employment e " +
             "JOIN FETCH e.employmentHistories eh " +
             "WHERE e.tenant = :tenantId")
-    Optional<Employment> findEmploymentsByTenantId(@Param("tenantId") UUID tenantId);
+    List<Employment> findEmploymentsByTenantId(@Param("tenantId") UUID tenantId);
 
     @Query("SELECT e FROM Employment e " +
             "JOIN FETCH e.employmentHistories eh " +
