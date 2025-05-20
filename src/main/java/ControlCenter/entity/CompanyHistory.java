@@ -37,6 +37,10 @@ public class CompanyHistory {
     @Column(name = "name", nullable = false, length = 64)
     private String name;
 
+    @NotNull(message = "Country can not be null")
+    @Column(name = "country", nullable = false, length = 64)
+    private String country;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "default_language_pack", nullable = true)
     private LanguagePack languagePackDefault;
@@ -53,6 +57,7 @@ public class CompanyHistory {
         companyHistory.setInternalId(dto.getInternalId());
         companyHistory.setStartDate(dto.getStartDate());
         companyHistory.setName(dto.getName());
+        companyHistory.setCountry(dto.getCountry());
         if(dto.getLanguagePackDefault() != null) {
             companyHistory.setLanguagePackDefault(LanguagePack.fromDTO(dto.getLanguagePackDefault()));
         }

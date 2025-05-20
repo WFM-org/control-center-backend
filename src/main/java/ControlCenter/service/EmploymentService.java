@@ -23,11 +23,12 @@ import java.util.UUID;
 public class EmploymentService {
 
     private final HistoricalDataManagementBuilder<Employment, EmploymentHistory, EmploymentDTO, EmploymentHistoryDTO> builder;
+    private final EmploymentRepository employmentRepository;
 
     public EmploymentService(EmploymentRepository employmentRepository,
                              EmploymentHistoryRepository employmentHistoryRepository,
                              EntityManager entityManager) {
-
+        this.employmentRepository = employmentRepository;
         this.builder = new HistoricalDataManagementBuilder<>(
                 employmentRepository::findEmploymentById,
                 employmentRepository::findEmploymentsByTenantId,
@@ -57,6 +58,10 @@ public class EmploymentService {
                 (eh) -> eh.setInternalId(null),
                 entityManager
         );
+    }
+
+    public Boolean isActive(UUID internalId, LocalDate effectiveDate) {
+        return employmentRepository.isActive(internalId, effectiveDate);
     }
 
     public Optional<EmploymentDTO> getEmploymentByInternalId(UUID internalId, LocalDate effectiveDate) {

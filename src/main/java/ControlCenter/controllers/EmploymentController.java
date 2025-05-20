@@ -54,6 +54,16 @@ public class EmploymentController {
         }
     }
 
+    @GetMapping("/employmentIsActive")
+    public ResponseEntity<Boolean> getIsActive(@RequestParam UUID internalId, @RequestParam LocalDate effectiveDate) {
+        try {
+            return ResponseEntity.ok(employmentService.isActive(internalId, effectiveDate));
+        } catch (Exception e) {
+            log.error("Error fetching employment by given id", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/createEmployment")
     public ResponseEntity<EmploymentDTO> createEmployment(@Valid @RequestBody EmploymentDTO request) {
         try {

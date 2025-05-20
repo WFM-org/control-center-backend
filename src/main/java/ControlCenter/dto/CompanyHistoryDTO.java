@@ -20,15 +20,17 @@ public class CompanyHistoryDTO {
     private LocalDate endDate;
     private LocalDate startDate;
     private String name;
+    private String country;
     private LanguagePackDTO languagePackDefault;
     private String timezone;
     private Short recordStatus;
 
-    public CompanyHistoryDTO(UUID internalId, UUID companyId, LocalDate startDate, String name, LanguagePackDTO languagePack, String timezone) {
+    public CompanyHistoryDTO(UUID internalId, UUID companyId, LocalDate startDate, String name, String country, LanguagePackDTO languagePack, String timezone) {
         this.internalId = internalId;
         this.companyId = companyId;
         this.startDate = startDate;
         this.name = name;
+        this.country = country;
         this.languagePackDefault = languagePack;
         this.timezone = timezone;
         this.recordStatus = RecordStatus.ACTIVE.getValue();
@@ -49,6 +51,7 @@ public class CompanyHistoryDTO {
                 companyHistory.getEndDate(),
                 companyHistory.getStartDate(),
                 companyHistory.getName(),
+                companyHistory.getCountry(),
                 languagePackDTO,
                 companyHistory.getTimezone(),
                 companyHistory.getRecordStatus());

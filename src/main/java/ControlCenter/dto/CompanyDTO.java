@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-// company - no historical data is integrated vs companyDTO historical data is integrated + list of historical data
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,6 +23,8 @@ public class CompanyDTO {
     private String externalId;
     @Historical
     private String name;
+    @Historical
+    private String country;
     @Historical
     private LanguagePackDTO languagePackDefault;
     @Historical
@@ -43,9 +43,9 @@ public class CompanyDTO {
         Optional<CompanyHistoryDTO> effectiveDated = Optional.empty();
         if(effectiveDate != null) {
             effectiveDated = historyList.stream()
-                    .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
-                    .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
-                    .filter(f -> effectiveDate.isBefore(f.getEndDate()))
+                    .filter(companyHistoryDTO -> companyHistoryDTO.getStartDate() != null && companyHistoryDTO.getEndDate() != null)
+                    .filter(companyHistoryDTO -> !effectiveDate.isBefore(companyHistoryDTO.getStartDate()))
+                    .filter(companyHistoryDTO -> !effectiveDate.isAfter(companyHistoryDTO.getEndDate()))
                     .findFirst();
         }
 
@@ -53,6 +53,7 @@ public class CompanyDTO {
                 company.getTenant(),
                 company.getExternalId(),
                 effectiveDated.map(CompanyHistoryDTO::getName).orElse(null),
+                effectiveDated.map(CompanyHistoryDTO::getCountry).orElse(null),
                 effectiveDated.map(CompanyHistoryDTO::getLanguagePackDefault).orElse(null),
                 effectiveDated.map(CompanyHistoryDTO::getTimezone).orElse(null),
                 effectiveDated.map(CompanyHistoryDTO::getStartDate).orElse(null),

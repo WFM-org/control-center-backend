@@ -44,7 +44,7 @@ public class PersonDTO {
         var effectiveDated = historyList.stream()
                 .filter(h -> h.getStartDate() != null && h.getEndDate() != null)
                 .filter(h -> !effectiveDate.isBefore(h.getStartDate()))
-                .filter(h -> effectiveDate.isBefore(h.getEndDate()))
+                .filter(f -> !effectiveDate.isAfter(f.getEndDate()))
                 .findFirst();
 
         PersonDTO dto = new PersonDTO();

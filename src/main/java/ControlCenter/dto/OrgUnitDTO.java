@@ -44,7 +44,7 @@ public class OrgUnitDTO {
             effectiveDated = historyList.stream()
                     .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
                     .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
-                    .filter(f -> effectiveDate.isBefore(f.getEndDate()))
+                    .filter(f -> !effectiveDate.isAfter(f.getEndDate()))
                     .findFirst();
         }
 
