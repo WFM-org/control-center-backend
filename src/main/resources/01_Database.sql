@@ -188,7 +188,7 @@ CREATE TABLE company
     CONSTRAINT fk_company_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id) ON DELETE CASCADE
 );
 
-CREATE TABLE  company_history
+CREATE TABLE company_history
 (
     internal_id UUID PRIMARY key DEFAULT gen_random_uuid(),
     parent UUID not NUll,
@@ -198,21 +198,13 @@ CREATE TABLE  company_history
     default_language_pack VARCHAR(10),
     default_timezone varChar(64),
     record_status smallint not null,
+    country CHAR(3) not null,
     CONSTRAINT unique_companyHistory_parentStart UNIQUE (parent, start_date),
     CONSTRAINT fk_company_ref FOREIGN KEY (parent) REFERENCES company (internal_id) ON DELETE cascade,
     CONSTRAINT fk_company_language_pack FOREIGN KEY (default_language_pack) REFERENCES language_pack (internal_id),
-    CONSTRAINT fk_company_timezone FOREIGN KEY (default_timezone) REFERENCES timezone (tz_name)
+    CONSTRAINT fk_company_timezone FOREIGN KEY (default_timezone) REFERENCES timezone (tz_name),
+    CONSTRAINT fk_company_country FOREIGN KEY (country) REFERENCES country (isocode3)
 );
-
-CREATE TABLE country_to_company
-(
-    country CHAR(3),
-    company UUID,
-    PRIMARY KEY (country, company),
-    CONSTRAINT fk_countrytocompany_country FOREIGN KEY (country) REFERENCES country (isocode3),
-    CONSTRAINT fk_countrytocompany_company FOREIGN KEY (company) REFERENCES company (internal_id) ON DELETE CASCADE
-);
-
 
 CREATE TABLE person
 (
@@ -257,7 +249,8 @@ CREATE TABLE employment
     freeze_access_from DATE,
     CONSTRAINT unique_employment_employeeID UNIQUE (tenant, employee_id),
     CONSTRAINT unique_employment_username UNIQUE (tenant, username),
-    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id)
+    CONSTRAINT fk_employment_person FOREIGN KEY (person) REFERENCES person (internal_id),
+    CONSTRAINT fk_employment_tenant FOREIGN KEY (tenant) REFERENCES tenant (internal_id)
 
 );
 
