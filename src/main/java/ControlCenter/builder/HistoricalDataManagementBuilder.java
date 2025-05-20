@@ -51,10 +51,11 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
     private final Function<Entity, List<HistoricalEntity>> getEntityHistories;
     private final Function<DTO, LocalDate> getStartDate;
     private final Function<HistoricalEntity, LocalDate> getEntityHistoryStartDate;
+    private final Function<HistoricalEntity, LocalDate> getEntityHistoryEndDate;
     private final Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate;
     private final Function<Entity, UUID> getId;
     private final Function<DTO, Entity> toEntity;
-    private final BiFunction<Entity, LocalDate, DTO> toDTO;
+    private final BiFunction<Entity, Optional<HistoricalDTO>, DTO> toDTO;
     private final BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity;
     private final Function<HistoricalEntity, HistoricalDTO> toHistoricalDTO;
     private final Supplier<HistoricalDTO> historicalDTOSupplier;
@@ -73,10 +74,11 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
                                            Function<Entity, List<HistoricalEntity>> getEntityHistories,
                                            Function<DTO, LocalDate> getStartDate,
                                            Function<HistoricalEntity, LocalDate> getEntityHistoryStartDate,
+                                           Function<HistoricalEntity, LocalDate> getEntityHistoryEndDate,
                                            Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate,
                                            Function<Entity, UUID> getId,
                                            Function<DTO, Entity> toEntity,
-                                           BiFunction<Entity, LocalDate, DTO> toDTO,
+                                           BiFunction<Entity, Optional<HistoricalDTO>, DTO> toDTO,
                                            BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity,
                                            Function<HistoricalEntity, HistoricalDTO> toHistoricalDTO,
                                            Supplier<HistoricalDTO> historicalDTOSupplier,
@@ -94,6 +96,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
         this.getEntityHistories = getEntityHistories;
         this.getStartDate = getStartDate;
         this.getEntityHistoryStartDate = getEntityHistoryStartDate;
+        this.getEntityHistoryEndDate = getEntityHistoryEndDate;
         this.getDTOHistoryStartDate = getDTOHistoryStartDate;
         this.getId = getId;
         this.toEntity = toEntity;
@@ -118,17 +121,17 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
 
         Entity newEntity = save.apply(entity);
         refresh(newEntity);
-        return toDTO.apply(newEntity, getStartDate.apply(dto));
+        return toDTO.apply(newEntity, fetchEffectiveDated(newEntity, getStartDate.apply(dto)));
     }
 
     public Optional<DTO> readById(UUID id, LocalDate effectiveDate) {
-        return findById.apply(id).map(value -> toDTO.apply(value, effectiveDate));
+        return findById.apply(id).map(value -> toDTO.apply(value, fetchEffectiveDated(value, effectiveDate)));
     }
 
     public List<DTO> readByTenant(UUID tenantId, LocalDate effectiveDate) {
         return findByTenant.apply(tenantId)
                 .stream()
-                .map(value -> toDTO.apply(value, effectiveDate))
+                .map(value -> toDTO.apply(value, fetchEffectiveDated(value, effectiveDate)))
                 .toList();
     }
 
@@ -167,7 +170,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
         Entity newEntity = save.apply(entity);
 
         refresh(newEntity);
-        return toDTO.apply(newEntity, getDTOHistoryStartDate.apply(newEntityHistory));
+        return toDTO.apply(newEntity, fetchEffectiveDated(newEntity, getDTOHistoryStartDate.apply(newEntityHistory)));
     }
 
     @Transactional
@@ -217,6 +220,15 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
         Optional<Entity> entity = findById.apply(id);
         if(entity.isEmpty()) throw new EntityNotFoundException();
         delete.accept(entity.get());
+    }
+
+    private Optional<HistoricalDTO> fetchEffectiveDated(Entity entity, LocalDate effectiveDate) {
+        return getEntityHistories.apply(entity).stream()
+                .filter(historicalEntity -> getEntityHistoryStartDate.apply(historicalEntity) != null && getEntityHistoryEndDate.apply(historicalEntity) != null)
+                .filter(historicalEntity -> !effectiveDate.isBefore(getEntityHistoryStartDate.apply(historicalEntity)))
+                .filter(historicalEntity -> !effectiveDate.isAfter(getEntityHistoryEndDate.apply(historicalEntity)))
+                .map(toHistoricalDTO)
+                .findFirst();
     }
 
     private void refresh(Object object) {

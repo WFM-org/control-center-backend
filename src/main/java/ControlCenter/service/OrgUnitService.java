@@ -42,6 +42,7 @@ public class OrgUnitService {
                 OrgUnit::getOrgUnitHistories,
                 OrgUnitDTO::getStartDate,
                 OrgUnitHistory::getStartDate,
+                OrgUnitHistory::getEndDate,
                 OrgUnitHistoryDTO::getStartDate,
                 OrgUnit::getInternalId,
                 OrgUnit::fromDTO,

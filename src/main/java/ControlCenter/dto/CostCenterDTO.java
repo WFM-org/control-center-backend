@@ -31,19 +31,9 @@ public class CostCenterDTO {
     @JsonProperty("historical")
     private List<CostCenterHistoryDTO> costCenterHistoryList;
 
-    public static CostCenterDTO fromEntity(CostCenter cc, LocalDate effectiveDate) {
+    public static CostCenterDTO fromEntity(CostCenter cc, Optional<CostCenterHistoryDTO> effectiveDated) {
         List<CostCenterHistoryDTO> historyList = cc.getCostCenterHistories().stream()
                 .map(CostCenterHistoryDTO::fromEntity).toList();
-
-        Optional<CostCenterHistoryDTO> effectiveDated = Optional.empty();
-        if (effectiveDate != null) {
-            effectiveDated = historyList.stream()
-                    .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
-                    .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
-                    .filter(f -> !effectiveDate.isAfter(f.getEndDate()))
-                    .findFirst();
-        }
-
         return new CostCenterDTO(
                 cc.getInternalId(),
                 cc.getTenant(),

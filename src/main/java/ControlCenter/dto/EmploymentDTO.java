@@ -53,20 +53,10 @@ public class EmploymentDTO {
     @JsonProperty("historical")
     private List<EmploymentHistoryDTO> employmentHistoryList;
 
-    public static EmploymentDTO fromEntity(Employment entity, LocalDate effectiveDate) {
+    public static EmploymentDTO fromEntity(Employment entity, Optional<EmploymentHistoryDTO> effectiveDated) {
         List<EmploymentHistoryDTO> histories = entity.getEmploymentHistories().stream()
                 .map(EmploymentHistoryDTO::fromEntity)
                 .toList();
-
-        Optional<EmploymentHistoryDTO> effective = Optional.empty();
-        if (effectiveDate != null) {
-            effective = histories.stream()
-                    .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
-                    .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
-                    .filter(f -> !effectiveDate.isAfter(f.getEndDate()))
-                    .findFirst();
-        }
-
         return new EmploymentDTO(
                 entity.getInternalId(),
                 entity.getTenant(),
@@ -80,16 +70,16 @@ public class EmploymentDTO {
                 entity.getHireDate(),
                 entity.getTerminationDate(),
                 entity.getFreezeAccessFrom(),
-                effective.map(EmploymentHistoryDTO::getEvent).orElse(null),
-                effective.map(EmploymentHistoryDTO::getEmployeeStatus).orElse(null),
-                effective.map(EmploymentHistoryDTO::getCompanyId).orElse(null),
-                effective.map(EmploymentHistoryDTO::getTimezone).orElse(null),
-                effective.map(EmploymentHistoryDTO::getManagerId).orElse(null),
-                effective.map(EmploymentHistoryDTO::getHrId).orElse(null),
-                effective.map(EmploymentHistoryDTO::getOrgUnitId).orElse(null),
-                effective.map(EmploymentHistoryDTO::getCostCenterId).orElse(null),
-                effective.map(EmploymentHistoryDTO::getStartDate).orElse(null),
-                effective.map(EmploymentHistoryDTO::getEndDate).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getEvent).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getEmployeeStatus).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getCompanyId).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getTimezone).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getManagerId).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getHrId).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getOrgUnitId).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getCostCenterId).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getStartDate).orElse(null),
+                effectiveDated.map(EmploymentHistoryDTO::getEndDate).orElse(null),
                 histories
         );
     }

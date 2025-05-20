@@ -47,6 +47,7 @@ public class EmploymentService {
                 Employment::getEmploymentHistories,
                 EmploymentDTO::getStartDate,
                 EmploymentHistory::getStartDate,
+                EmploymentHistory::getEndDate,
                 EmploymentHistoryDTO::getStartDate,
                 Employment::getInternalId,
                 Employment::fromDTO,

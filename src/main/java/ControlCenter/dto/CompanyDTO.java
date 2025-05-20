@@ -36,19 +36,9 @@ public class CompanyDTO {
     @JsonProperty("historical")
     private List<CompanyHistoryDTO> companyHistoryList;
 
-    public static CompanyDTO fromEntity(Company company, LocalDate effectiveDate) {
+    public static CompanyDTO fromEntity(Company company, Optional<CompanyHistoryDTO> effectiveDated) {
         List<CompanyHistoryDTO> historyList = company.getCompanyHistories().stream()
                 .map(CompanyHistoryDTO::fromEntity).toList();
-
-        Optional<CompanyHistoryDTO> effectiveDated = Optional.empty();
-        if(effectiveDate != null) {
-            effectiveDated = historyList.stream()
-                    .filter(companyHistoryDTO -> companyHistoryDTO.getStartDate() != null && companyHistoryDTO.getEndDate() != null)
-                    .filter(companyHistoryDTO -> !effectiveDate.isBefore(companyHistoryDTO.getStartDate()))
-                    .filter(companyHistoryDTO -> !effectiveDate.isAfter(companyHistoryDTO.getEndDate()))
-                    .findFirst();
-        }
-
         return new CompanyDTO(company.getInternalId(),
                 company.getTenant(),
                 company.getExternalId(),

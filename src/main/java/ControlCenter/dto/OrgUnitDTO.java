@@ -34,20 +34,10 @@ public class OrgUnitDTO {
     @JsonProperty("historical")
     private List<OrgUnitHistoryDTO> orgUnitHistoryList;
 
-    public static OrgUnitDTO fromEntity(OrgUnit orgUnit, LocalDate effectiveDate) {
+    public static OrgUnitDTO fromEntity(OrgUnit orgUnit, Optional<OrgUnitHistoryDTO> effectiveDated) {
         List<OrgUnitHistoryDTO> historyList = orgUnit.getOrgUnitHistories().stream()
                 .map(OrgUnitHistoryDTO::fromEntity)
                 .toList();
-
-        Optional<OrgUnitHistoryDTO> effectiveDated = Optional.empty();
-        if (effectiveDate != null) {
-            effectiveDated = historyList.stream()
-                    .filter(f -> f.getStartDate() != null && f.getEndDate() != null)
-                    .filter(f -> !effectiveDate.isBefore(f.getStartDate()))
-                    .filter(f -> !effectiveDate.isAfter(f.getEndDate()))
-                    .findFirst();
-        }
-
         return new OrgUnitDTO(
                 orgUnit.getInternalId(),
                 orgUnit.getTenant(),

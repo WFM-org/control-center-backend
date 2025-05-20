@@ -6,8 +6,8 @@ import ControlCenter.dto.CostCenterHistoryDTO;
 import ControlCenter.entity.CostCenter;
 import ControlCenter.entity.CostCenterHistory;
 import ControlCenter.exception.*;
-import ControlCenter.repository.CostCenterRepository;
 import ControlCenter.repository.CostCenterHistoryRepository;
+import ControlCenter.repository.CostCenterRepository;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,7 @@ public class CostCenterService {
                 CostCenter::getCostCenterHistories,
                 CostCenterDTO::getStartDate,
                 CostCenterHistory::getStartDate,
+                CostCenterHistory::getEndDate,
                 CostCenterHistoryDTO::getStartDate,
                 CostCenter::getInternalId,
                 CostCenter::fromDTO,

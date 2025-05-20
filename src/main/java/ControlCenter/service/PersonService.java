@@ -44,6 +44,7 @@ public class PersonService {
                 Person::getPersonHistories,
                 PersonDTO::getStartDate,
                 PersonHistory::getStartDate,
+                PersonHistory::getEndDate,
                 PersonHistoryDTO::getStartDate,
                 Person::getInternalId,
                 Person::fromDTO,

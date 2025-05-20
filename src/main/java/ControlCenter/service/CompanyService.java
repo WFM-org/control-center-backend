@@ -42,6 +42,7 @@ public class CompanyService {
                 Company::getCompanyHistories,
                 CompanyDTO::getStartDate,
                 CompanyHistory::getStartDate,
+                CompanyHistory::getEndDate,
                 CompanyHistoryDTO::getStartDate,
                 Company::getInternalId,
                 Company::fromDTO,
