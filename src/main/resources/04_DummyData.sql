@@ -83,18 +83,12 @@ VALUES
     ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSVTEST'),'SS03'),
     ((SELECT internal_id FROM Tenant WHERE tenant_id = 'DSV'),'SS04');
 
-INSERT INTO company_history (parent,start_date,name,default_language_pack,record_status,default_timezone)
+INSERT INTO company_history (parent,start_date,name,default_language_pack,record_status,default_timezone,country)
 VALUES
-	((SELECT internal_id FROM company WHERE external_id='SS01'),'1900-01-01','Company A A/S','en_GB',1,'Europe/Copenhagen'),
-	((SELECT internal_id FROM company WHERE external_id='SS02'),'1900-01-01','Company B A/S','en_GB',1,'Europe/Copenhagen'),
-	((SELECT internal_id FROM company WHERE external_id='SS03'),'1900-01-01','Company C A/S','en_GB',1,'Europe/Copenhagen'),
-	((SELECT internal_id FROM company WHERE external_id='SS04'),'1900-01-01','Company D A/S','en_GB',1,'Europe/Copenhagen');
- INSERT INTO Country_To_Company
-VALUES
-    ('DNK',(SELECT internal_id FROM Company where external_id = 'SS01')),
-    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS02')),
-    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS03')),
-    ('DNK',(SELECT internal_id FROM Company WHERE external_id = 'SS04'));
+	((SELECT internal_id FROM company WHERE external_id='SS01'),'1900-01-01','Company A A/S','en_GB',1,'Europe/Copenhagen','DNK'),
+	((SELECT internal_id FROM company WHERE external_id='SS02'),'1900-01-01','Company B A/S','en_GB',1,'Europe/Copenhagen','DNK'),
+	((SELECT internal_id FROM company WHERE external_id='SS03'),'1900-01-01','Company C A/S','en_GB',1,'Europe/Copenhagen','DNK'),
+	((SELECT internal_id FROM company WHERE external_id='SS04'),'1900-01-01','Company D A/S','en_GB',1,'Europe/Copenhagen','DNK');
 
  INSERT INTO Person (tenant,person_Id,language_pack)
 VALUES
