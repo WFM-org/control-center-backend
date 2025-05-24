@@ -30,6 +30,7 @@ public class CompanyService {
 
         this.builder = new HistoricalDataManagementBuilder<>(
                 companyRepository::findCompanyById,
+                companyHistoryRepository::findById,
                 companyRepository::findCompaniesByTenantId,
                 (dto, id) -> new CompanyHistoryDTO(null, id,
                         dto.getStartDate(), dto.getName(), dto.getCountry(), dto.getLanguagePackDefault(), dto.getTimezone()),
@@ -45,6 +46,7 @@ public class CompanyService {
                 CompanyHistory::getEndDate,
                 CompanyHistoryDTO::getStartDate,
                 Company::getInternalId,
+                (ch) -> ch.getCompany().getInternalId(),
                 Company::fromDTO,
                 CompanyDTO::fromEntity,
                 CompanyHistory::fromDTO,
@@ -102,9 +104,9 @@ public class CompanyService {
     }
 
     @Transactional
-    public Boolean deleteCompanyHistoricalRecord(UUID parentId, CompanyHistoryDTO record) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
+    public Boolean deleteCompanyHistoricalRecord(UUID internalId) throws CompanyNotFoundException, CompanyHistoryNotFoundException {
         try {
-            return builder.deleteHistoricalRecord(parentId, record);
+            return builder.deleteHistoricalRecord(internalId);
         } catch (EntityNotFoundException e) {
             throw new CompanyNotFoundException();
         } catch (HistoricalEntityNotFoundException e) {

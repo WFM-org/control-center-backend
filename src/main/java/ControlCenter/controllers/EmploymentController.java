@@ -114,21 +114,20 @@ public class EmploymentController {
         }
     }
 
-    @DeleteMapping("/deleteEmploymentHistoricalRecord/{employmentId}")
-    public ResponseEntity<EmploymentDTO> deleteEmploymentHistory(@PathVariable UUID employmentId,
-                                                                 @RequestBody EmploymentHistoryDTO record) {
+    @DeleteMapping("/deleteEmploymentHistoricalRecord/{internalId}")
+    public ResponseEntity<EmploymentDTO> deleteEmploymentHistory(@PathVariable UUID internalId) {
         try {
-            String logMessage = "Historical record assigned to Employment with id {} deleted successfully";
-            if (employmentService.deleteEmploymentHistoricalRecord(employmentId, record)) {
-                logMessage = "Employment with id {} and its historical data deleted successfully";
+            String logMessage = "Historical record for Employment with id {} deleted successfully";
+            if (employmentService.deleteEmploymentHistoricalRecord(internalId)) {
+                logMessage = "Employment associated with historical record with id {} is deleted successfully";
             }
-            log.info(logMessage, employmentId);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            log.info(logMessage, internalId);
+            return ResponseEntity.ok().build();
         } catch (EmploymentNotFoundException e) {
-            log.error("Failed to delete historical record: Employment with id: {} not found", employmentId);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            log.error("Failed to delete historical record with id {}: Employment could not be found", internalId);
+            return ResponseEntity.badRequest().build();
         } catch (EmploymentHistoryNotFoundException e) {
-            log.error("Failed to delete historical record: Start date {} not found", record.getStartDate());
+            log.error("Failed to delete historical record with id {}: Historical record could not be found", internalId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

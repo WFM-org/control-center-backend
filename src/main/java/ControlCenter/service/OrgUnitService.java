@@ -30,6 +30,7 @@ public class OrgUnitService {
 
         this.builder = new HistoricalDataManagementBuilder<>(
                 orgUnitRepository::findOrgUnitById,
+                orgUnitHistoryRepository::findById,
                 orgUnitRepository::findOrgUnitsByTenantId,
                 (dto, id) -> new OrgUnitHistoryDTO(null, id,
                         dto.getStartDate(), dto.getName(), dto.getParentUnitId()),
@@ -45,6 +46,7 @@ public class OrgUnitService {
                 OrgUnitHistory::getEndDate,
                 OrgUnitHistoryDTO::getStartDate,
                 OrgUnit::getInternalId,
+                (oh) -> oh.getOrgUnit().getInternalId(),
                 OrgUnit::fromDTO,
                 OrgUnitDTO::fromEntity,
                 OrgUnitHistory::fromDTO,
@@ -104,10 +106,10 @@ public class OrgUnitService {
     }
 
     @Transactional
-    public Boolean deleteOrgUnitHistoricalRecord(UUID parentId, OrgUnitHistoryDTO record)
+    public Boolean deleteOrgUnitHistoricalRecord(UUID internalId)
             throws OrgUnitNotFoundException, OrgUnitHistoryNotFoundException {
         try {
-            return builder.deleteHistoricalRecord(parentId, record);
+            return builder.deleteHistoricalRecord(internalId);
         } catch (EntityNotFoundException e) {
             throw new OrgUnitNotFoundException();
         } catch (HistoricalEntityNotFoundException e) {

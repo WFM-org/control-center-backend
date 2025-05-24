@@ -31,6 +31,7 @@ public class EmploymentService {
         this.employmentRepository = employmentRepository;
         this.builder = new HistoricalDataManagementBuilder<>(
                 employmentRepository::findEmploymentById,
+                employmentHistoryRepository::findById,
                 employmentRepository::findEmploymentsByTenantId,
                 (dto, id) -> new EmploymentHistoryDTO(null, id,
                         dto.getStartDate(), dto.getEndDate(), dto.getEvent(), dto.getEmployeeStatus(),
@@ -50,6 +51,7 @@ public class EmploymentService {
                 EmploymentHistory::getEndDate,
                 EmploymentHistoryDTO::getStartDate,
                 Employment::getInternalId,
+                (eh) -> eh.getEmployment().getInternalId(),
                 Employment::fromDTO,
                 EmploymentDTO::fromEntity,
                 EmploymentHistory::fromDTO,
@@ -113,10 +115,10 @@ public class EmploymentService {
     }
 
     @Transactional
-    public Boolean deleteEmploymentHistoricalRecord(UUID parentId, EmploymentHistoryDTO record)
+    public Boolean deleteEmploymentHistoricalRecord(UUID internalId)
             throws EmploymentNotFoundException, EmploymentHistoryNotFoundException {
         try {
-            return builder.deleteHistoricalRecord(parentId, record);
+            return builder.deleteHistoricalRecord(internalId);
         } catch (EntityNotFoundException e) {
             throw new EmploymentNotFoundException();
         } catch (HistoricalEntityNotFoundException e) {

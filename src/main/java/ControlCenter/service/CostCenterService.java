@@ -30,6 +30,7 @@ public class CostCenterService {
 
         this.builder = new HistoricalDataManagementBuilder<>(
                 costCenterRepository::findCostCenterById,
+                costCenterHistoryRepository::findById,
                 costCenterRepository::findCostCentersByTenantId,
                 (dto, id) -> new CostCenterHistoryDTO(null, id,
                         dto.getStartDate(), dto.getName(), dto.getParentUnitId()),
@@ -45,6 +46,7 @@ public class CostCenterService {
                 CostCenterHistory::getEndDate,
                 CostCenterHistoryDTO::getStartDate,
                 CostCenter::getInternalId,
+                (cch) -> cch.getCostCenter().getInternalId(),
                 CostCenter::fromDTO,
                 CostCenterDTO::fromEntity,
                 CostCenterHistory::fromDTO,
@@ -102,9 +104,9 @@ public class CostCenterService {
     }
 
     @Transactional
-    public Boolean deleteCostCenterHistoricalRecord(UUID parentId, CostCenterHistoryDTO record) throws CostCenterNotFoundException, CostCenterHistoryNotFoundException {
+    public Boolean deleteCostCenterHistoricalRecord(UUID internalId) throws CostCenterNotFoundException, CostCenterHistoryNotFoundException {
         try {
-            return builder.deleteHistoricalRecord(parentId, record);
+            return builder.deleteHistoricalRecord(internalId);
         } catch (EntityNotFoundException e) {
             throw new CostCenterNotFoundException();
         } catch (HistoricalEntityNotFoundException e) {

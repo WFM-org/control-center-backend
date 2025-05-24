@@ -30,6 +30,7 @@ public class PersonService {
 
         this.builder = new HistoricalDataManagementBuilder<>(
                 personRepository::findPersonById,
+                personHistoryRepository::findById,
                 personRepository::findPersonsByTenantId,
                 (dto, id) -> new PersonHistoryDTO(null, id,
                         dto.getStartDate(), dto.getEndDate(),
@@ -47,6 +48,7 @@ public class PersonService {
                 PersonHistory::getEndDate,
                 PersonHistoryDTO::getStartDate,
                 Person::getInternalId,
+                (ph) -> ph.getPerson().getInternalId(),
                 Person::fromDTO,
                 PersonDTO::fromEntity,
                 PersonHistory::fromDTO,
@@ -104,9 +106,9 @@ public class PersonService {
     }
 
     @Transactional
-    public Boolean deletePersonHistoricalRecord(UUID parentId, PersonHistoryDTO record) throws PersonNotFoundException, PersonHistoryNotFoundException {
+    public Boolean deletePersonHistoricalRecord(UUID internalId) throws PersonNotFoundException, PersonHistoryNotFoundException {
         try {
-            return builder.deleteHistoricalRecord(parentId, record);
+            return builder.deleteHistoricalRecord(internalId);
         } catch (EntityNotFoundException e) {
             throw new PersonNotFoundException();
         } catch (HistoricalEntityNotFoundException e) {

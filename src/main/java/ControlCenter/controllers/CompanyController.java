@@ -104,21 +104,20 @@ public class CompanyController {
         }
     }
 
-    @DeleteMapping("/deleteCompanyHistoricalRecord/{companyId}")
-    public ResponseEntity<CompanyDTO> deleteCompanyHistory(@PathVariable UUID companyId,
-                                                           @RequestBody CompanyHistoryDTO record) {
+    @DeleteMapping("/deleteCompanyHistoricalRecord/{internalId}")
+    public ResponseEntity<HttpStatus> deleteCompanyHistory(@PathVariable UUID internalId) {
         try {
-            String logMessage = "Historical record with assigned to Company with id {} is deleted successfully";
-            if(companyService.deleteCompanyHistoricalRecord(companyId, record)) {
-                logMessage = "Company with with id {} and historical data is deleted successfully";
+            String logMessage = "Historical record with id {} is deleted successfully";
+            if(companyService.deleteCompanyHistoricalRecord(internalId)) {
+                logMessage = "Company associated with historical record with id {} is deleted successfully";
             }
-            log.info(logMessage, companyId);
+            log.info(logMessage, internalId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (CompanyNotFoundException e) {
-            log.error("Failed to delete historical record: Company with id: {} could not be found", companyId);
+            log.error("Failed to delete historical record with id {}: Company could not be found", internalId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (CompanyHistoryNotFoundException e) {
-            log.error("Failed to delete historical record: History with start date: {} could not be found", record.getStartDate());
+            log.error("Failed to delete historical record with id {}: Historical record could not be found", internalId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

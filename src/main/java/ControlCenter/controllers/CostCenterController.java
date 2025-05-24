@@ -104,21 +104,20 @@ public class CostCenterController {
         }
     }
 
-    @DeleteMapping("/deleteCostCenterHistoricalRecord/{costCenterId}")
-    public ResponseEntity<CostCenterDTO> deleteCostCenterHistory(@PathVariable UUID costCenterId,
-                                                                 @RequestBody CostCenterHistoryDTO record) {
+    @DeleteMapping("/deleteCostCenterHistoricalRecord/{internalId}")
+    public ResponseEntity<CostCenterDTO> deleteCostCenterHistory(@PathVariable UUID internalId) {
         try {
             String logMessage = "Historical record for CostCenter with id {} deleted successfully";
-            if (costCenterService.deleteCostCenterHistoricalRecord(costCenterId, record)) {
-                logMessage = "CostCenter with id {} and its historical data deleted successfully";
+            if (costCenterService.deleteCostCenterHistoricalRecord(internalId)) {
+                logMessage = "Cost Center associated with historical record with id {} is deleted successfully";
             }
-            log.info(logMessage, costCenterId);
+            log.info(logMessage, internalId);
             return ResponseEntity.ok().build();
         } catch (CostCenterNotFoundException e) {
-            log.error("CostCenter with id: {} not found", costCenterId);
+            log.error("Failed to delete historical record with id {}: Cost Center could not be found", internalId);
             return ResponseEntity.badRequest().build();
         } catch (CostCenterHistoryNotFoundException e) {
-            log.error("Historical record with start date: {} not found", record.getStartDate());
+            log.error("Failed to delete historical record with id {}: Historical record could not be found", internalId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

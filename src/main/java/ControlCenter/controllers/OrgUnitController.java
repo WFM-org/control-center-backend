@@ -105,21 +105,20 @@ public class OrgUnitController {
         }
     }
 
-    @DeleteMapping("/deleteOrgUnitHistoricalRecord/{orgUnitId}")
-    public ResponseEntity<OrgUnitDTO> deleteOrgUnitHistory(@PathVariable UUID orgUnitId,
-                                                           @RequestBody OrgUnitHistoryDTO record) {
+    @DeleteMapping("/deleteOrgUnitHistoricalRecord/{internalId}")
+    public ResponseEntity<OrgUnitDTO> deleteOrgUnitHistory(@PathVariable UUID internalId) {
         try {
-            String logMessage = "Historical record assigned to OrgUnit with id {} is deleted successfully";
-            if (orgUnitService.deleteOrgUnitHistoricalRecord(orgUnitId, record)) {
-                logMessage = "OrgUnit with id {} and its historical data is deleted successfully";
+            String logMessage = "Historical record for Org Unit with id {} deleted successfully";
+            if (orgUnitService.deleteOrgUnitHistoricalRecord(internalId)) {
+                logMessage = "Org Unit associated with historical record with id {} is deleted successfully";
             }
-            log.info(logMessage, orgUnitId);
+            log.info(logMessage, internalId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (OrgUnitNotFoundException e) {
-            log.error("Failed to delete historical record: OrgUnit with id: {} could not be found", orgUnitId);
+            log.error("Failed to delete historical record with id {}: Org Unit could not be found", internalId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (OrgUnitHistoryNotFoundException e) {
-            log.error("Failed to delete historical record: History with start date: {} could not be found", record.getStartDate());
+            log.error("Failed to delete historical record with id {}: Historical record could not be found", internalId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }

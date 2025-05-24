@@ -41,6 +41,7 @@ import java.util.function.*;
 public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, HistoricalDTO> {
 
     private final Function<UUID, Optional<Entity>> findById;
+    private final Function<UUID, Optional<HistoricalEntity>> findHistoricalById;
     private final Function<UUID, List<Entity>> findByTenant;
     private final BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO;
     private final BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO;
@@ -54,6 +55,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
     private final Function<HistoricalEntity, LocalDate> getEntityHistoryEndDate;
     private final Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate;
     private final Function<Entity, UUID> getId;
+    private final Function<HistoricalEntity, UUID> getParentId;
     private final Function<DTO, Entity> toEntity;
     private final BiFunction<Entity, Optional<HistoricalDTO>, DTO> toDTO;
     private final BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity;
@@ -64,6 +66,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
     private final EntityManager entityManager;
 
     public HistoricalDataManagementBuilder(Function<UUID, Optional<Entity>> findById,
+                                           Function<UUID, Optional<HistoricalEntity>> findHistoricalById,
                                            Function<UUID, List<Entity>> findByTenant,
                                            BiFunction<DTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromDTO,
                                            BiFunction<HistoricalDTO, UUID, HistoricalDTO> fabricateNewHistoricalRecordFromHistoricalDTO,
@@ -77,6 +80,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
                                            Function<HistoricalEntity, LocalDate> getEntityHistoryEndDate,
                                            Function<HistoricalDTO, LocalDate> getDTOHistoryStartDate,
                                            Function<Entity, UUID> getId,
+                                           Function<HistoricalEntity, UUID> getParentId,
                                            Function<DTO, Entity> toEntity,
                                            BiFunction<Entity, Optional<HistoricalDTO>, DTO> toDTO,
                                            BiFunction<HistoricalDTO, Entity, HistoricalEntity> toHistoricalEntity,
@@ -86,6 +90,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
                                            Consumer<HistoricalDTO> clearHistoricalId,
                                            EntityManager entityManager) {
         this.findById = findById;
+        this.findHistoricalById = findHistoricalById;
         this.findByTenant = findByTenant;
         this.fabricateNewHistoricalRecordFromDTO = fabricateNewHistoricalRecordFromDTO;
         this.fabricateNewHistoricalRecordFromHistoricalDTO = fabricateNewHistoricalRecordFromHistoricalDTO;
@@ -99,6 +104,7 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
         this.getEntityHistoryEndDate = getEntityHistoryEndDate;
         this.getDTOHistoryStartDate = getDTOHistoryStartDate;
         this.getId = getId;
+        this.getParentId = getParentId;
         this.toEntity = toEntity;
         this.toDTO = toDTO;
         this.toHistoricalEntity = toHistoricalEntity;
@@ -194,23 +200,16 @@ public class HistoricalDataManagementBuilder<Entity, HistoricalEntity, DTO, Hist
     }
 
     @Transactional
-    public boolean deleteHistoricalRecord(UUID parentId, HistoricalDTO record) throws HistoricalEntityNotFoundException, EntityNotFoundException {
-        Entity parentEntity = findById.apply(parentId).orElseThrow(EntityNotFoundException::new);
-
-        List<HistoricalEntity> histories = getEntityHistories.apply(parentEntity);
-
-        HistoricalEntity history = histories
-                .stream()
-                .filter(h -> getEntityHistoryStartDate.apply(h).equals(getDTOHistoryStartDate.apply(record)))
-                .findFirst().orElseThrow(HistoricalEntityNotFoundException::new);
+    public boolean deleteHistoricalRecord(UUID internalId) throws HistoricalEntityNotFoundException, EntityNotFoundException {
+        HistoricalEntity historicalEntity = findHistoricalById.apply(internalId).orElseThrow(HistoricalEntityNotFoundException::new);
+        Entity parentEntity = findById.apply(getParentId.apply(historicalEntity)).orElseThrow(EntityNotFoundException::new);
 
         boolean hasDeletedParent = false;
         if(getEntityHistories.apply(parentEntity).size() == 1) {
             delete.accept(parentEntity);
             hasDeletedParent = true;
         } else {
-            histories.remove(history);
-            deleteHistory.accept(history);
+            deleteHistory.accept(historicalEntity);
         }
 
         return hasDeletedParent;

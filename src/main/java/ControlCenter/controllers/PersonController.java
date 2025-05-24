@@ -105,21 +105,20 @@ public class PersonController {
         }
     }
 
-    @DeleteMapping("/deletePersonHistoricalRecord/{personId}")
-    public ResponseEntity<PersonDTO> deletePersonHistory(@PathVariable UUID personId,
-                                                         @RequestBody PersonHistoryDTO record) {
+    @DeleteMapping("/deletePersonHistoricalRecord/{internalId}")
+    public ResponseEntity<PersonDTO> deletePersonHistory(@PathVariable UUID internalId) {
         try {
-            String logMessage = "Historical record with assigned to Person with id {} is deleted successfully";
-            if(personService.deletePersonHistoricalRecord(personId, record)) {
-                logMessage = "Person with with id {} and historical data is deleted successfully";
+            String logMessage = "Historical record for Person with id {} deleted successfully";
+            if(personService.deletePersonHistoricalRecord(internalId)) {
+                logMessage = "Person associated with historical record with id {} is deleted successfully";
             }
-            log.info(logMessage, personId);
+            log.info(logMessage, internalId);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (PersonNotFoundException e) {
-            log.error("Failed to delete historical record: Person with id: {} could not be found", personId);
+            log.error("Failed to delete historical record with id {}: Person could not be found", internalId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (PersonHistoryNotFoundException e) {
-            log.error("Failed to delete historical record: History with start date: {} could not be found", record.getStartDate());
+            log.error("Failed to delete historical record with id {}: Historical record could not be found", internalId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
